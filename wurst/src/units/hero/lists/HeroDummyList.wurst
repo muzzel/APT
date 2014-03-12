@@ -1,0 +1,69 @@
+package HeroDummyList
+import HeroDummyGen
+import DamageTypeList
+import EquipmentClassList
+
+public function initHeroDummyLists()
+	// Stats:
+	let life = 80
+	let mana = 60
+	let damage = 8
+	let armor = 0
+	let movespeed = 300
+	let attackspeed = 160
+	let meleeRange = 100
+	// Init hero base stats:
+	herogenInitHero(life, mana, damage, armor, attackspeed, movespeed, DamageType.NORMAL)
+	// Generate melee heroe dummies (SWORD, AXE, DAGGER, TWOHANDED, STAFF):
+	let MELEE_N = herogenNewMelee(life, mana, damage, armor, attackspeed, movespeed, meleeRange, DamageType.NORMAL)
+	let MELEE_B = herogenNewMelee(life, mana, damage, armor, attackspeed, movespeed, meleeRange, DamageType.BLUNT)
+	let MELEE_P = herogenNewMelee(life, mana, damage, armor, attackspeed, movespeed, meleeRange, DamageType.PIERCING)
+	let MELEE_M = herogenNewMelee(life, mana, damage, armor, attackspeed, movespeed, meleeRange, DamageType.MAGIC)
+	let MELEE_F = herogenNewMelee(life, mana, damage, armor, attackspeed, movespeed, meleeRange, DamageType.FIRE)
+	// Generate ranged heroe dummies (WAND, BOW, GUN):
+	let RANGED_N = herogenNewRanged(life, mana, damage, armor, attackspeed, movespeed, 600, DamageType.NORMAL, 0.00, "Abilities\\Weapons\\Rifle\\RifleImpact.mdl", 1900)
+	let RANGED_B = herogenNewRanged(life, mana, damage, armor, attackspeed, movespeed, 600, DamageType.BLUNT, 0.15, "Abilities\\Weapons\\Axe\\AxeMissile.mdl", 1200)
+	let RANGED_P = herogenNewRanged(life, mana, damage, armor, attackspeed, movespeed, 700, DamageType.PIERCING, 0.15, "Abilities\\Weapons\\Arrow\\ArrowMissile.mdl", 1200)
+	let RANGED_M = herogenNewRanged(life, mana, damage, armor, attackspeed, movespeed, 500, DamageType.MAGIC, 0.00, "Abilities\\Weapons\\PriestMissile\\PriestMissile.mdl", 1200)
+	let RANGED_F = herogenNewRanged(life, mana, damage, armor, attackspeed, movespeed, 500, DamageType.FIRE, 0.15, "Abilities\\Weapons\\FireBallMissile\\FireBallMissile.mdl", 900)
+	// Map dummies to heroes:
+	put(EquipmentClass.SWORD, DamageType.NORMAL, MELEE_N)
+	put(EquipmentClass.SWORD, DamageType.BLUNT, MELEE_B)
+	put(EquipmentClass.SWORD, DamageType.PIERCING, MELEE_P)
+	put(EquipmentClass.SWORD, DamageType.MAGIC, MELEE_M)
+	put(EquipmentClass.SWORD, DamageType.FIRE, MELEE_F)
+	put(EquipmentClass.AXE, DamageType.NORMAL, MELEE_N)
+	put(EquipmentClass.AXE, DamageType.BLUNT, MELEE_B)
+	put(EquipmentClass.AXE, DamageType.PIERCING, MELEE_P)
+	put(EquipmentClass.AXE, DamageType.MAGIC, MELEE_M)
+	put(EquipmentClass.AXE, DamageType.FIRE, MELEE_F)
+	put(EquipmentClass.DAGGER, DamageType.NORMAL, MELEE_N)
+	put(EquipmentClass.DAGGER, DamageType.BLUNT, MELEE_B)
+	put(EquipmentClass.DAGGER, DamageType.PIERCING, MELEE_P)
+	put(EquipmentClass.DAGGER, DamageType.MAGIC, MELEE_M)
+	put(EquipmentClass.DAGGER, DamageType.FIRE, MELEE_F)
+	put(EquipmentClass.TWOHANDED, DamageType.NORMAL, MELEE_N)
+	put(EquipmentClass.TWOHANDED, DamageType.BLUNT, MELEE_B)
+	put(EquipmentClass.TWOHANDED, DamageType.PIERCING, MELEE_P)
+	put(EquipmentClass.TWOHANDED, DamageType.MAGIC, MELEE_M)
+	put(EquipmentClass.TWOHANDED, DamageType.FIRE, MELEE_F)
+	put(EquipmentClass.STAFF, DamageType.NORMAL, MELEE_N)
+	put(EquipmentClass.STAFF, DamageType.BLUNT, MELEE_B)
+	put(EquipmentClass.STAFF, DamageType.PIERCING, MELEE_P)
+	put(EquipmentClass.STAFF, DamageType.MAGIC, MELEE_M)
+	put(EquipmentClass.STAFF, DamageType.FIRE, MELEE_F)
+	put(EquipmentClass.WAND, DamageType.NORMAL, RANGED_N)
+	put(EquipmentClass.WAND, DamageType.BLUNT, RANGED_B)
+	put(EquipmentClass.WAND, DamageType.PIERCING, RANGED_P)
+	put(EquipmentClass.WAND, DamageType.MAGIC, RANGED_M)
+	put(EquipmentClass.WAND, DamageType.FIRE, RANGED_F)
+	put(EquipmentClass.BOW, DamageType.NORMAL, RANGED_N)
+	put(EquipmentClass.BOW, DamageType.BLUNT, RANGED_B)
+	put(EquipmentClass.BOW, DamageType.PIERCING, RANGED_P)
+	put(EquipmentClass.BOW, DamageType.MAGIC, RANGED_M)
+	put(EquipmentClass.BOW, DamageType.FIRE, RANGED_F)
+	put(EquipmentClass.GUN, DamageType.NORMAL, RANGED_N)
+	put(EquipmentClass.GUN, DamageType.BLUNT, RANGED_B)
+	put(EquipmentClass.GUN, DamageType.PIERCING, RANGED_P)
+	put(EquipmentClass.GUN, DamageType.MAGIC, RANGED_M)
+	put(EquipmentClass.GUN, DamageType.FIRE, RANGED_F)

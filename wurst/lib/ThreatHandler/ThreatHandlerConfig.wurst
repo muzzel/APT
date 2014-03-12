@@ -1,0 +1,33 @@
+package ThreatHandlerConfig
+import ThreatHandler
+import UnitX
+import CreepUnitX
+import HeroUnitX
+
+/** Make this return the ThreatHandlerTU assigned to the specified unit. */
+public function getThreatUnit(unit u) returns ThreatHandlerTU
+	ThreatHandlerTU tu = null
+	if u.getUnitX() instanceof CreepUnitX
+		tu = (u.getUnitX() castTo CreepUnitX).getThreatHandlerTU()
+	return tu
+
+/** Make this return the ThreatHandlerPU assigned to the specified unit. */
+public function getPlayerUnit(unit u) returns ThreatHandlerPU
+	ThreatHandlerPU pu = null
+	if u.getUnitX() instanceof HeroUnitX
+		pu = (u.getUnitX() castTo HeroUnitX).getThreatHandlerPU()
+	return pu
+	
+/** This function is executed when units are returning. It can be used to clean them up. */
+public function onThreatUnitReturn(unit u)
+	u.setHP(u.getState(UNIT_STATE_MAX_LIFE))
+	u.setMana(u.getState(UNIT_STATE_MAX_MANA))
+	
+// Maximum returning time after which ThreatUnits will get teleported back to camp:
+public constant int TIME_TO_PORT = 10
+// The range a ThreatUnit can move away from the original camping position, before being ordered to return:
+public constant real RETURN_RANGE = 1500
+// The range a ThreatUnits target can be away from the original camping position, before being ordered to return:
+public constant real ORDER_RETURN_RANGE = 4000
+// The range between units considered being in the same camp.
+public constant real CAMP_RANGE = 400

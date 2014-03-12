@@ -1,0 +1,11 @@
+package EquipmentSlotList
+
+public constant int EQUIPMENT_SLOT_COUNT = 6
+
+public enum EquipmentSlot
+	MAINHAND
+	OFFHAND
+	CHEST
+	HELMET
+	GLOVES
+	ACCESSORY

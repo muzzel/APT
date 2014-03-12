@@ -1,0 +1,52 @@
+package TestUtils
+// By muzzel - Version 1.1
+
+/** Registers a chat event. */
+public function chatEvent(string s, code c)
+	CreateTrigger()
+		..registerPlayerChatEvent(Player(0), s, true)
+		..addAction(c)
+
+/** Registers a esc-key event. */
+public function escEvent(code c)
+	CreateTrigger()
+		..registerPlayerEvent(Player(0), EVENT_PLAYER_END_CINEMATIC)
+		..addAction(c)
+
+/** Registers game time event. */
+public function timeEvent(real time, code c)
+	CreateTrigger()
+		..registerTimerEvent(time, false)
+		..addAction(c)
+	
+/** Registers a periodic event. */
+public function periodicEvent(real time, code c)
+	CreateTrigger()
+		..registerTimerEvent(time, true)
+		..addAction(c)
+
+trigger smartCoordsTrigger
+
+init
+	// Testutils Help (-testutils)
+	chatEvent("-testutils", () -> begin
+		print("Testutils commands:")
+		print("  -testutils smartcoords (toggles smart coords)")
+	end)
+	// Smart Coordinates: (-testutils smartcoords)
+	smartCoordsTrigger = CreateTrigger()
+		..registerPlayerUnitEvent(Player(0), EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER, null)
+		..addAction(() -> begin
+			if GetIssuedOrderId() == 851971
+				print("Coordinates: " + GetOrderPointX().toString() + " / " + GetOrderPointY().toString())
+				TriggerSleepAction(0.01)
+				IssueImmediateOrder(GetTriggerUnit(), "stop")
+	end)..disable()
+	chatEvent("-testutils smartcoords", () -> begin
+		if IsTriggerEnabled(smartCoordsTrigger)
+			smartCoordsTrigger.disable()
+			print("Testutils: Smart Coords disabled")
+		else
+			smartCoordsTrigger.enable()
+			print("Testutils: Smart Coords enabled")
+	end)

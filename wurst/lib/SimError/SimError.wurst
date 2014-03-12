@@ -1,0 +1,10 @@
+package SimError
+// Full credits to Vexorian.
+
+sound error = CreateSoundFromLabel("InterfaceError", false, false, false, 10, 10)
+
+public function simError(player forPlayer, string message)
+	if GetLocalPlayer() == forPlayer
+		ClearTextMessages()
+		DisplayTimedTextToPlayer(forPlayer, .52, .96, 2., "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n|cffffcc00" + message + "|r")
+		StartSound(error)

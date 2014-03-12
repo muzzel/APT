@@ -1,0 +1,53 @@
+package ItemTypeX
+import public EquipmentSlotList
+import public EquipmentClassList
+import DamageTypeList
+import StatHandler
+import HashMap
+import Attachment
+
+HashMap<int, ItemTypeX> raw2ItemType = new HashMap<int, ItemTypeX>()
+
+/** Retrieves the ItemTypeX object for the specified raw id. */
+public function int.getItemTypeX() returns ItemTypeX
+	return raw2ItemType.get(this)
+
+public enum ItemClass
+	NONE // default, must be first in list!
+	EQUIPMENT
+//	MATERIAL
+//	RECIPE
+//	POTION
+
+public class ItemTypeX
+	int raw
+	ItemClass itemClass
+	// Item.EQUIPMENT properties:
+	EquipmentSlot equipmentSlot
+	EquipmentClass equipmentClass
+	DamageType mainhandDamageType
+	StatList stats
+	attachment attachment1
+	attachment attachment2
+	// TODO: Material/Potion/etc. properties (add initPropertiesXXX function).
+	
+	construct(int raw)
+		raw2ItemType.put(raw, this)
+		this.raw = raw
+		this.itemClass = itemClass
+	
+	function initPropertiesEquipment(EquipmentSlot equipmentSlot, EquipmentClass equipmentClass, DamageType mainhandDamageType)
+		if itemClass castTo int != 0
+			printWarning("ItemTypeX.itemClass already set!")
+		this.itemClass = ItemClass.EQUIPMENT
+		this.stats = new StatList()
+		this.equipmentSlot = equipmentSlot
+		this.equipmentClass = equipmentClass
+		if equipmentSlot == EquipmentSlot.MAINHAND
+			this.mainhandDamageType = mainhandDamageType 
+	
+	function isEquipment() returns boolean
+		return itemClass == ItemClass.EQUIPMENT
+		
+	ondestroy
+		printWarning("Attempt to destroy ItemTypeX object.")

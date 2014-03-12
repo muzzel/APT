@@ -1,0 +1,471 @@
+package ThreatHandler
+import public ThreatHandlerConfig
+// By muzzel - Version 1.0
+// Based on ZTS by Zwiebelchen (http://www.hiveworkshop.com/forums/spells-569/zwiebelchens-threat-system-2-6-a-156179/)
+//
+// It is recommended to edit certain Gameplay Constants entries, to use the full potential of the system.
+// The most important entries are: (with selected "Show Raw-Data")
+//		CallForHelp        --> Set this to 0, if possible; the system will manage this - it isn't a problem if you don't do this, though
+//		                       You don't have to do it if your threat-system controlled units are neutral hostile
+//		CreepCallForHelp   --> Set this to 0, if possible; the system will manage this - it isn't a problem if you don't do this, though
+//		GuardDistance      --> Set this to something higher than ReturnRange (see below)
+//		MaxGuardDistance   --> Set this to something higher than ReturnRange (see below)
+//		GuardReturnTime    --> Set this to something very high, so that the standard AI doesn't interfere (i.e. 60 seconds)
+//
+// Todo:
+// - store total amount of threat in ThreatUnit to make calculation of % threat faster
+// - add IsEvent function
+
+/** 
+ * Modifies the threat caused by playerUnit to threatUnit.
+ * If add is true the specified value will be added/substracted.
+ * This function is failsafe to use with negative values.
+ */
+public function modifyThreat(unit playerUnit, unit threatUnit, real value, boolean add)
+	let pu = getPlayerUnit(playerUnit)
+	let tu = getThreatUnit(threatUnit)
+	real newValue = value
+	if pu == null or tu == null
+		return
+	if IsUnitType(playerUnit, UNIT_TYPE_DEAD) or IsUnitType(threatUnit, UNIT_TYPE_DEAD) or playerUnit.getTypeId() == 0 or threatUnit.getTypeId() == 0
+		return
+	if tu.state == ThreatUnitState.RETURNING or tu.state == ThreatUnitState.RETURNED
+		return
+	ThreatListEntry e
+	if HaveSavedInteger(ht, pu castTo int, tu castTo int)
+		// ThreatListEntry for (pu x tu) already exists:
+		e = ht.loadInt(pu castTo int, tu castTo int) castTo ThreatListEntry
+		if add
+			newValue = e.threat + value
+		if newValue < 0
+			newValue = 0
+		e.setThreat(newValue)
+	else
+		// Create new ThreatListEntry:
+		if value < 0
+			newValue = 0
+		tu.camp.addIncombatList()
+		tu.camp.state = CampState.COMBAT
+		e = new ThreatListEntry(pu, tu, newValue)
+		var campUnit = tu.camp.dummy
+		while campUnit.campNext != tu.camp.dummy
+			campUnit = campUnit.campNext
+			campUnit.state = ThreatUnitState.COMBAT
+			if campUnit != tu
+				e = new ThreatListEntry(pu, campUnit, 0)
+	
+/** 
+ * Returns the combat state of a PlayerUnit or ThreatUnit.
+ * Returns true if the specified unit is in combat.
+ * Returns false if the specified unit is unregistered, dead or invalid.
+ */
+public function getCombatState(unit u) returns boolean
+	if GetUnitTypeId(u) == 0 or IsUnitType(u, UNIT_TYPE_DEAD)
+		return false
+	let pu = getPlayerUnit(u)
+	if pu != null
+		return pu.dummy.puNext != pu.dummy
+	let tu = getThreatUnit(u)
+	if tu != null
+		return tu.getFirstInThreatList() != null
+	return false
+
+/**
+ * Returns an iterator for the sepcified ThreatUnit which allows iterating over the ThreatUnits threat list entries.
+ * Returns null if the specified ThreatUnit is invalid.
+ */ 
+public function getThreatUnitIterator(unit threatUnit) returns ThreatUnitIterator
+	ThreatUnitIterator iter = null
+	let tu = getThreatUnit(threatUnit)
+	if tu != null
+		iter = tu.iterator()
+	return iter
+
+/** 
+ * Returns the first PlayerUnit in the specified ThreatUnits threat list.
+ * Returns null if invalid ThreatUnit or if threat list is empty.
+ */
+public function getThreatUnitFirstSlot(unit threatUnit) returns unit
+	unit u = null
+	let tu = getThreatUnit(threatUnit)
+	if tu != null
+		u = tu.getFirstInThreatList()
+	return u
+	
+hashtable ht = InitHashtable()
+ThreatHandlerCamp array icList // List of Camps which are in combat
+int icListLast = 0
+
+enum CampState
+	OOC
+	COMBAT
+	RETURNING
+			
+class ThreatHandlerCamp
+	int icListId
+	ThreatHandlerTU dummy
+	CampState state
+	int timeToPortLeft
+	
+	construct()
+		icListId = 0
+		dummy = new ThreatHandlerTU()
+		state = CampState.OOC
+	
+	function addIncombatList()
+		if icListId == 0
+			icListLast++
+			icListId = icListLast
+			icList[icListLast] = this
+	
+	function removeIncombatList()
+		if icListId != 0
+			icList[icListId] = icList[icListLast]
+			icListLast--
+			icListId = 0
+	
+	function add(ThreatHandlerTU tu)
+		if tu.camp != null
+			printWarning("ThreatHandlerCamp.add(ThreatHandlerTU tu): " + tu.u.getName() + " already has a camp assigned.")
+		tu.campPrev = dummy.campPrev
+		tu.campNext = dummy
+		dummy.campPrev.campNext = tu
+		dummy.campPrev = tu
+		tu.camp = this
+		
+	function returnCamp()
+		state = CampState.RETURNING
+		timeToPortLeft = TIME_TO_PORT*2
+		var campUnit = dummy
+		while campUnit.campNext != dummy
+			campUnit = campUnit.campNext
+			campUnit.state = ThreatUnitState.RETURNING
+			// Clear threat list:
+			for ThreatListEntry e in campUnit
+				destroy e
+			campUnit.u.issueImmediateOrderById(851972) // stop
+			campUnit.u.issuePointOrder("move", campUnit.campPos)
+			SetUnitInvulnerable(campUnit.u, true)
+			onThreatUnitReturn(campUnit.u)
+		
+	function checkReturned()
+		var ret = true
+		var campUnit = dummy
+		while campUnit.campNext != dummy
+			campUnit = campUnit.campNext
+			if campUnit.state != ThreatUnitState.RETURNED
+				ret = false
+				break
+		if ret // all units RETURNED
+			state = CampState.OOC
+			removeIncombatList()
+			campUnit = dummy
+			while campUnit.campNext != dummy
+				campUnit = campUnit.campNext
+				campUnit.state = ThreatUnitState.OOC
+				SetUnitInvulnerable(campUnit.u, false)
+				campUnit.u.unpause()
+	
+	/** 
+	 * Removes the specified ThreatHandlerTU from this camp.
+	 * Destroys the camp and removes it from icList if no ThreatHandlerTU left.
+	 */ 
+	function remove(ThreatHandlerTU tu)
+		tu.campNext.campPrev = tu.campPrev
+		tu.campPrev.campNext = tu.campNext
+		tu.camp = null
+		if dummy.campNext == dummy // camp empty, destroy it
+			destroy this
+	
+	ondestroy
+		removeIncombatList()
+		destroy dummy
+
+enum ThreatUnitState
+	OOC
+	COMBAT
+	RETURNING
+	RETURNED
+
+public class ThreatHandlerPU
+	protected unit u
+	// Dummy for LinkedList of ThreatListEntries:
+	protected ThreatListEntry dummy
+	
+	construct(unit u)
+		// TODO: Optional: check if unit is already registered or dead/null.
+		this.u = u
+		dummy = new ThreatListEntry()
+	
+	protected function add(ThreatListEntry e)
+		e.puPrev = dummy.puPrev
+		e.puNext = dummy
+		dummy.puPrev.puNext = e
+		dummy.puPrev = e
+	
+	protected function remove(ThreatListEntry e)
+		e.puNext.puPrev = e.puPrev
+		e.puPrev.puNext = e.puNext
+	
+	ondestroy
+		// Clear list:
+		var e = dummy
+		while e.tuNext != dummy
+			e = e.tuNext
+			destroy e
+		destroy dummy
+		// Enable ==null checks:
+		this.u = null
+
+function acquireTarget()
+	unit tu = GetTriggerUnit()
+	unit pu
+	if GetEventTargetUnit() != null
+		pu = GetEventTargetUnit()
+	else
+		pu = GetOrderTargetUnit()
+	if IsUnitEnemy(pu, GetOwningPlayer(tu))
+		if getThreatUnit(tu).state == ThreatUnitState.OOC
+			modifyThreat(pu, tu, 0, true) // Sets this unit in combat
+			
+public class ThreatHandlerTU
+	protected ThreatUnitState state
+	protected unit u
+	protected vec2 campPos
+	// Dummy for LinkedList of ThreatListEntries:
+	protected ThreatListEntry dummy
+	protected trigger targetAcquireTrigger
+	// Camp linkedlist:
+	protected ThreatHandlerCamp camp
+	protected ThreatHandlerTU campPrev
+	protected ThreatHandlerTU campNext
+	
+	private construct() // Constructs a dummy
+		campPrev = this
+		campNext = this
+		this.camp = null
+	
+	function getUnit() returns unit
+		return u
+	
+	construct(unit u)
+		// TODO: Optional: Check if unit was already registered, of it unit is dead/null.
+		state = ThreatUnitState.OOC
+		this.u = u
+		campPos = u.getPos()
+		dummy = new ThreatListEntry()
+		targetAcquireTrigger = CreateTrigger()
+			..registerUnitEvent(u, EVENT_UNIT_ISSUED_TARGET_ORDER)
+			..registerUnitEvent(u, EVENT_UNIT_ACQUIRED_TARGET)
+			..addAction(function acquireTarget)
+		// Look for camps:
+		GroupEnumUnitsInRange(ENUM_GROUP, u.getPos().x, u.getPos().y, CAMP_RANGE, Condition(() -> begin
+				// Enum units which are: 1. registered ThreatUnits, 2. alive, 3. not in combat 
+				return getThreatUnit(GetFilterUnit()).u != null and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and getThreatUnit(GetFilterUnit()).state == ThreatUnitState.OOC
+		end))
+		let other = FirstOfGroup(ENUM_GROUP)
+		if other != null
+			let otherTu = getThreatUnit(other)
+			// Add this to otherTus camp:
+//			print("otherTu null: " + (otherTu == null).toString())
+//			print("otherTu.camp null: " + (otherTu.camp == null).toString())
+//			print("this null: " + (this == null).toString())
+			otherTu.camp.add(this)
+		else
+			// Create a new camp:
+			new ThreatHandlerCamp().add(this)
+		ENUM_GROUP.clear()
+	
+	
+	// TODO: Add another constructor which takes an additional unit argument.
+	// It specifies to which group this unit should be added.
+	// This replaces ZTS: includeCombatCamps == true.
+	
+	function iterator() returns ThreatUnitIterator
+		return new ThreatUnitIterator(this)
+	
+	protected function getFirstInThreatList() returns unit
+		unit ret = null
+		if dummy.tuNext != dummy
+			ret = dummy.tuNext.pu.u
+		return ret
+	
+	protected function add(ThreatListEntry e)
+		var t = dummy.tuPrev
+		while e.threat > t.threat
+			t = t.tuPrev
+		// insert e after t:
+		t.tuNext.tuPrev = e
+		e.tuNext = t.tuNext
+		t.tuNext = e
+		e.tuPrev = t
+	
+	/** 
+	 * Moves the specified entry in this list to preserve the order. 
+	 * The second argument specifies if the threat was increased or decreased.
+	 */
+	protected function sort(ThreatListEntry e, boolean increased)
+		if increased
+			if e.threat > e.tuPrev.threat
+				// if threat was increased and is bigger than value of previous entry:
+				var t = e.tuPrev
+				while e.threat > t.threat
+					t = t.tuPrev
+				// remove e and insert it after t:
+				remove(e)
+				t.tuNext.tuPrev = e
+				e.tuNext = t.tuNext
+				t.tuNext = e
+				e.tuPrev = t
+		else
+			if e.threat < e.tuNext.threat
+				// if threat was decreased and is smaller than the next entry:
+				var t = e.tuNext
+				while e.threat < t.threat
+					t = t.tuNext
+				// remove e and insert it before t:
+				remove(e)
+				t.tuPrev.tuNext = e
+				e.tuPrev = t.tuPrev
+				t.tuPrev = e
+				e.tuNext = t
+	
+	protected function remove(ThreatListEntry e)
+		e.tuNext.tuPrev = e.tuPrev
+		e.tuPrev.tuNext = e.tuNext
+	
+	ondestroy
+		// Clear list:
+		for ThreatListEntry e in this
+			destroy e
+		destroy dummy
+		camp.remove(this)
+		targetAcquireTrigger.destr()
+		if state == ThreatUnitState.RETURNING
+			u.issueImmediateOrderById(851972) // stop
+			SetUnitInvulnerable(u, false)
+			if IsUnitPaused(u)
+				u.unpause()
+		// Enable ==null checks:
+		this.u = null
+
+public class ThreatUnitIterator
+	ThreatHandlerTU tu
+	ThreatListEntry current
+	
+	construct(ThreatHandlerTU tu)
+		this.tu = tu
+		current = tu.dummy
+	
+	function hasNext() returns boolean
+		return current.tuNext != tu.dummy
+		
+	function next() returns ThreatListEntry
+		current = current.tuNext
+		return current
+	
+	function reset()
+		current = tu.dummy
+	
+	function close()
+		skip
+
+public class ThreatListEntry
+	protected ThreatHandlerPU pu
+	protected ThreatHandlerTU tu
+	protected ThreatListEntry puPrev
+	protected ThreatListEntry puNext
+	protected ThreatListEntry tuPrev
+	protected ThreatListEntry tuNext
+	protected real threat
+	
+	construct(ThreatHandlerPU pu, ThreatHandlerTU tu, real threat)
+		this.pu = pu
+		this.tu = tu
+		this.threat = threat
+		pu.add(this)
+		tu.add(this)
+		ht.saveInt(pu castTo int, tu castTo int, this castTo int)
+	
+	function getThreat() returns real
+		return threat
+	
+	function getPlayerUnit() returns unit
+		return pu.u
+	
+	function getThreatUnit() returns unit
+		return tu.u
+	
+	/** Constructs a dummy for use as linkedlist warden element */
+	private construct()
+		tuPrev = this
+		tuNext = this
+		tuPrev = this
+		tuNext = this
+		threat = 100000000.
+		pu = null
+		tu = null
+	
+	ondestroy
+		if pu != null // if not dummy element
+			pu.remove(this)
+			tu.remove(this)
+			RemoveSavedInteger(ht, pu castTo int, tu castTo int)
+	
+	protected function setThreat(real newThreat)
+		let increased = newThreat > threat // increased or decreased
+		this.threat = newThreat
+		tu.sort(this, increased)
+		
+function update()
+	unit u
+	ThreatHandlerCamp camp
+	ThreatHandlerTU tu
+	for int i = 1 to icListLast
+		camp = icList[i]
+		if camp.state == CampState.COMBAT
+			tu = camp.dummy
+			while tu.campNext != camp.dummy
+				tu = tu.campNext
+				u = tu.u
+				let target = tu.getFirstInThreatList()
+				if target != null and IsUnitInRangeXY(u, tu.campPos.x, tu.campPos.y, RETURN_RANGE) and IsUnitInRangeXY(target, tu.campPos.x, tu.campPos.y, ORDER_RETURN_RANGE)
+					if GetUnitCurrentOrder(u) == 851983 or GetUnitCurrentOrder(u) == 0 or GetUnitCurrentOrder(u) == 851971
+						// TODO: eventBool = true
+						u.issueTargetOrderById(851971, target) // smart
+						// TODO: eventBool = false
+				else
+					camp.returnCamp()
+					break
+		if camp.state == CampState.RETURNING
+			if camp.timeToPortLeft > 0
+				camp.timeToPortLeft--
+				tu = camp.dummy
+				while tu.campNext != camp.dummy
+					tu = tu.campNext
+					u = tu.u
+					if tu.state == ThreatUnitState.RETURNING // Ignore RETURNED units
+							if IsUnitInRangeXY(u, tu.campPos.x, tu.campPos.y, 35.)
+								if not GetUnitCurrentOrder(u) == 851986 // move
+									tu.state = RETURNED
+									u.pause()
+									camp.checkReturned()
+							else
+								u.issuePointOrder("move", tu.campPos)
+			else
+				// teleport units
+				camp.state = CampState.OOC
+				tu = camp.dummy
+				while tu.campNext != camp.dummy
+					tu = tu.campNext
+					u = tu.u
+					if tu.state == ThreatUnitState.RETURNING
+						// teleport tu
+						u.setPos(tu.campPos)
+						onThreatUnitReturn(u)
+					tu.state = ThreatUnitState.OOC
+					SetUnitInvulnerable(u, false)
+					u.unpause()
+	
+init
+	CreateTimer().startPeriodic(0.5, function update)

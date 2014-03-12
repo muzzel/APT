@@ -1,0 +1,61 @@
+package HeroUnitX
+import UnitX
+import UnitTypeX
+import StatHandler
+import BuffHandler
+import DamageHandler
+import HeroDummyGen
+import EquipmentClassList
+import DamageTypeList
+import ThreatHandler
+import HeroInventory
+
+public class HeroUnitX extends UnitX
+	// ThreatHandler
+	private ThreatHandlerPU pu
+	HeroInventory heroInventory
+	
+	construct(player owner, vec2 pos, angle facing)
+		super(owner, getUnitTypeHero(), pos, facing)
+		pu = new ThreatHandlerPU(u)
+		heroInventory = new HeroInventory(this)
+		changeDummyDefault()
+	
+	function getThreatHandlerPU() returns ThreatHandlerPU
+		return pu
+	
+	function changeDummy(EquipmentClass eqClass, DamageType dmgType)
+		changeHeroDummy(u, eqClass, dmgType)
+		unitDamageHandler.damageType = dmgType
+		setAnimation(eqClass)
+	
+	function changeDummyDefault()
+		changeDummy(EquipmentClass.SWORD, DamageType.NORMAL)
+		
+	private function setAnimation(EquipmentClass eqClass)
+		AddUnitAnimationProperties(u, "Alternate", false)
+		AddUnitAnimationProperties(u, "Channel", false)
+		AddUnitAnimationProperties(u, "Defend", false)
+		AddUnitAnimationProperties(u, "Flesh", false)
+		AddUnitAnimationProperties(u, "Gold", false)
+		AddUnitAnimationProperties(u, "Lumber", false)
+		AddUnitAnimationProperties(u, "Work", false)
+		switch eqClass
+			case SWORD
+				AddUnitAnimationProperties(u, "Alternate", true)
+			case AXE
+				AddUnitAnimationProperties(u, "None", true)
+			case DAGGER
+				AddUnitAnimationProperties(u, "Alternate", true)
+			case TWOHANDED
+				AddUnitAnimationProperties(u, "Channel", true)
+			case STAFF
+				AddUnitAnimationProperties(u, "Channel", true)
+			case WAND
+				AddUnitAnimationProperties(u, "Flesh", true)
+			case BOW
+				AddUnitAnimationProperties(u, "Lumber", true)
+			case GUN
+				AddUnitAnimationProperties(u, "Work", true)
+			default
+				AddUnitAnimationProperties(u, "None", true)

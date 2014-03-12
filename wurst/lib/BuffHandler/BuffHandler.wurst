@@ -1,0 +1,149 @@
+//
+//	package BuffHandlerConfig
+//		import BuffHandler
+//		public function unit.getBuffList() returns BuffList
+//			return null
+//		public module BuffCustomMembers
+//			function initCustomMembers()
+//	endpackage
+//
+package BuffHandler
+	import LinkedList
+	import public BuffHandlerConfig
+	
+	public enum BuffPolicy
+		STACKING
+		LAST
+	
+	public function unit.hasBuff(int buffTypeId) returns boolean
+		return this.getBuffList().countBuffsOfTypeId(buffTypeId) > 0
+	
+	public abstract class Buff
+		use BuffCustomMembers
+		
+		private BuffList parent
+		
+		function getBuffTypeId() returns int
+			return this.typeId
+		
+		function getParentBufflist() returns BuffList
+			return this.parent
+		
+		function getName() returns string
+			return ""
+		
+		function getRaw() returns int
+			return 0
+		
+		function getBuffRaw() returns int
+			return 0
+		
+		function getPolicy() returns BuffPolicy
+			return BuffPolicy.STACKING
+		
+		function checkApply() returns boolean
+			if this.getPolicy() == BuffPolicy.LAST
+				for Buff b in this.parent.getList()
+					if b.getBuffTypeId() == this.getBuffTypeId() and b != this
+						destroy b
+			return true
+		
+		function onCreate()
+		
+		function onApply()
+			
+		function onRemove()
+		
+		function preDestroy()
+		
+		function getUnit() returns unit
+			if this.parent != null
+				return this.parent.getUnit()
+			else
+				return null
+		
+		construct()
+			this.parent = null
+			this.initCustomMembers()
+			this.onCreate()
+		
+		private function addBuffIcon()
+			let raw = this.getRaw()
+			if raw != 0
+				if parent.countBuffsOfType(this) <= 1
+					parent.getUnit().addAbility(raw)
+					UnitMakeAbilityPermanent(parent.getUnit(), true, raw)
+		
+		private function removeBuffIcon()
+			let raw = this.getRaw()
+			if raw != 0
+				if parent.countBuffsOfType(this) <= 1
+					UnitMakeAbilityPermanent(parent.getUnit(), false, raw)
+					parent.getUnit().removeAbility(raw)
+					let buffRaw = this.getBuffRaw()
+					if buffRaw != 0
+						parent.getUnit().removeAbility(buffRaw)
+		
+		function applyRemove(unit target)
+			if this.parent != null
+				this.onRemove()
+				this.removeBuffIcon()
+				this.parent.removeBuff(this)
+				this.parent = null
+			
+		function applyReapply(unit target)
+			if target != null
+				this.parent = target.getBuffList()
+				if this.checkApply()
+					this.parent.addBuff(this)
+					this.addBuffIcon()
+					this.onApply()
+			
+		function apply(unit target)
+			applyRemove(target)
+			applyReapply(target)
+			
+		ondestroy
+			this.applyRemove(null)
+			this.preDestroy()
+			this.destroyCustomMembers()
+		
+	public class BuffList
+		LinkedList<Buff> buffs
+		
+		private unit u
+		
+		construct(unit u)
+			this.u = u
+			this.buffs = new LinkedList<Buff>()
+		
+		function getUnit() returns unit
+			return this.u
+		
+		function getList() returns LinkedList<Buff>
+			return buffs
+		
+		function addBuff(Buff b)
+			this.buffs.add(b)
+		
+		function removeBuff(Buff b)
+			this.buffs.remove(b) // currently in O(n), can be done in O(1)
+		
+		ondestroy
+			destroy this.buffs
+		
+		function countBuffsOfTypeId(int id) returns integer
+			var n = 0
+			for Buff b in this.buffs
+				if b.getBuffTypeId() == id
+					n++
+			return n
+		
+		function countBuffsOfType(Buff b) returns integer
+			return countBuffsOfTypeId(b.getBuffTypeId())
+		
+		function debugPrint()
+			for Buff b in this.buffs
+				print("Buff: " + b.getName() + " ( id " + I2S(b castTo int) + " )")
+		
+endpackage

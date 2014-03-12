@@ -1,0 +1,25 @@
+package UnitTypeX
+import StatHandler
+import public DamageTypeList
+import HashMap
+import Rational
+
+HashMap<int, UnitTypeX> raw2UnitType = new HashMap<int, UnitTypeX>()
+
+// Retrieves the UnitTypeX object for the specified raw id.
+public function int.getUnitTypeX() returns UnitTypeX
+	return raw2UnitType.get(this)
+
+public class UnitTypeX
+	int raw
+	DamageType damageType
+	UnitBaseStatBuffer unitBaseStatBuffer
+	
+	construct(int raw, UnitBaseStatBuffer unitBaseStatBuffer)
+		raw2UnitType.put(raw, this)
+		this.raw = raw
+		this.damageType = DamageType.NORMAL // TODO: dont hardcode
+		this.unitBaseStatBuffer = unitBaseStatBuffer
+	
+	ondestroy
+		printWarning("Attempt to destroy UnitTypeX object.")

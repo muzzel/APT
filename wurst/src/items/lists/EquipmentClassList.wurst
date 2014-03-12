@@ -1,0 +1,29 @@
+package EquipmentClassList
+
+// NOTE:
+// If you add EquipmentClasses to the enum dont forget to add the according
+// code to:
+// - [APT.units.hero.HeroDummyGen]
+
+public enum EquipmentClass
+	// Mainhand:
+	SWORD // default
+	AXE
+	DAGGER
+	TWOHANDED // blocks offhand
+	STAFF // blocks offhand
+	WAND
+	BOW
+	GUN
+	// Offhand:
+	SHIELD
+	ORB
+	QUIVER
+	KNIFE
+	// ...?
+	// Others:
+	CHAIN
+	LEATHER
+	CLOTH
+	//
+	ACCESSORY

@@ -1,0 +1,14 @@
+package DamageTypeList
+
+// NOTE:
+// If you add DamageTypes to the enum dont forget to add the according
+// code to:
+// - "unitDamageTarget(...)" in [APT.damage.DamageHandler]
+// - [APT.units.hero.HeroDummyGen]
+
+public enum DamageType
+	NORMAL // default
+	BLUNT
+	PIERCING
+	MAGIC
+	FIRE

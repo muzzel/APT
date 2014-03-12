@@ -1,0 +1,27 @@
+package InventoryIterator
+
+public class InventoryIterator
+	unit hero
+	int nextSlot // points to the slot id which holds the next item, 6 if none
+	
+	construct(unit hero)
+		this.hero = hero
+		this.nextSlot = -1
+	
+	private function findNextNonemptySlot()
+		while(nextSlot < 6 and UnitItemInSlot(hero, nextSlot+1) == null)
+			nextSlot++
+	
+	function hasNext() returns boolean
+		findNextNonemptySlot()
+		return nextSlot < 6
+		
+	function next() returns item
+		nextSlot++
+		return UnitItemInSlot(hero, nextSlot)
+	
+	function getCurrentSlotId() returns int
+		return nextSlot
+		
+	function close()
+		destroy this

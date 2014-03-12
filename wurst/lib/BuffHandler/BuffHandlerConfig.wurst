@@ -1,0 +1,16 @@
+package BuffHandlerConfig
+	import BuffHandler
+	import UnitX
+	
+	public function unit.getBuffList() returns BuffList
+		return this.getUnitX().buffList
+	
+	public module BuffCustomMembers
+		
+		function initCustomMembers()
+			skip
+		
+		function destroyCustomMembers()
+			skip
+			
+endpackage

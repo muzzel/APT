@@ -1,0 +1,72 @@
+package DamageHandler
+import public DamageTypeList
+import UnitX
+import CreepUnitX
+import StatHandler
+import CombatText
+import ThreatHandler
+
+trigger unitAttackTrigger
+
+// Wrapper for non-attack damage.
+public function unitDamageTarget(unit source, unit target, real damage, DamageType damageType)
+	unitDamageTarget(source, target, damage, damageType, false)
+
+public function unitDamageTarget(unit source, unit target, real damage, DamageType damageType, boolean isAttack)
+	boolean isCrit = false
+	var dmg = damage
+	// if damage comes from autoattack
+	if isAttack
+		// Calc evasion
+		if GetRandomInt(0, 99) < target.getStat(Stat.EVA) // if evade ...
+			combatTextEvade(source, target)
+			return
+		// Calc crit
+		if GetRandomInt(0, 99) < source.getStat(Stat.CC) // if crit ...
+			isCrit = true
+			dmg = dmg * (1 + source.getStat(Stat.CM)*0.01) + source.getStat(Stat.CB) // damage = damage * critmultiplier + critbonus
+	// Calc damage modifieds from armor/resists
+	switch damageType
+		case NORMAL
+			dmg -= target.getStat(Stat.ARMOR)
+		case BLUNT
+			dmg -= target.getStat(Stat.ARMOR)
+		case PIERCING
+			dmg -= target.getStat(Stat.ARMOR)
+		case MAGIC
+		case FIRE
+	// Apply damage
+	if dmg > 0
+		target.setHP(target.getHP() - dmg)
+		// Apply Threat
+		if target.getUnitX() instanceof CreepUnitX
+			real threat = dmg
+			threat *= (1+source.getStat(Stat.ATTACKTHREAT)*0.01)
+			modifyThreat(source, target, threat, true)
+	// Floating text
+	if isCrit
+		combatTextCrit(source, target, dmg)
+	else
+		combatTextDamage(source, target, dmg)
+	
+
+// TODO: give every instance its own trigger, action
+public class UnitDamageHandler
+	UnitX parent
+	DamageType damageType
+	
+	construct(UnitX unitX, DamageType damageType)
+		parent = unitX
+		this.damageType = damageType
+		unitAttackTrigger.registerUnitEvent(parent.getUnit(), EVENT_UNIT_DAMAGED)
+	
+	static function unitAttacked()
+		unit source = GetEventDamageSource()
+		let unitX = source.getUnitX()
+		DamageType damageType = unitX.unitDamageHandler.damageType
+		real damage = 1.*unitX.unitStatBuffer.get(Stat.DAMAGE)
+		unitDamageTarget(source, GetTriggerUnit(), damage, damageType, true)
+	
+init
+	unitAttackTrigger = CreateTrigger()
+	..addAction(function UnitDamageHandler.unitAttacked)

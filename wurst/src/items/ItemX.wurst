@@ -1,0 +1,41 @@
+package ItemX
+import ItemTypeX
+import StatHandler
+
+integer currentCreationTimestamp
+
+public function increaseItemTimestamp()
+	currentCreationTimestamp++
+
+public function item.getItemX() returns ItemX
+	return this.getUserData() castTo ItemX
+
+public class ItemX
+	ItemTypeX itemType
+	private integer boundTo // playernumber, -1 if unbound
+	private integer creationTimestamp
+	private item itemInstance
+	// Attachment effects:
+	effect attachmentSfx1
+	effect attachmentSfx2
+	
+	construct(int raw, vec2 pos)
+		this.itemType = raw.getItemTypeX()
+		this.boundTo = -1
+		this.creationTimestamp = currentCreationTimestamp
+		this.itemInstance = createItem(itemType.raw, pos)
+		itemInstance.setUserData(this castTo int)
+	
+	function getCreationTimestamp() returns int
+		return creationTimestamp
+	
+	function isBound() returns boolean
+		return boundTo == -1
+	
+	// Returns the player id of owning player.
+	// Returns -1 if not bound.
+	function getOwner() returns int
+		return boundTo
+	
+init
+	currentCreationTimestamp = 1

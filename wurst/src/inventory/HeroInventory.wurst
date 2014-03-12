@@ -1,0 +1,128 @@
+package HeroInventory
+import HashMap
+import ItemX
+import InventoryIterator
+import ItemTypeX
+import EquipmentClassList
+import SimError
+import HeroUnitX
+import Attachment
+
+public class HeroInventory
+	HeroUnitX heroUnitX
+	trigger itemTakeTrigger
+	trigger itemDropTrigger
+	
+	function takeItem(item modifiedItem)
+		let itemX = modifiedItem.getItemX()
+		let itemTypeX = itemX.itemType
+		let valid = validate()
+		if valid
+			// valid
+			// Switch hero dummy:
+			if itemTypeX.isEquipment() and itemTypeX.equipmentSlot == EquipmentSlot.MAINHAND
+				heroUnitX.changeDummy(itemTypeX.equipmentClass, itemTypeX.mainhandDamageType)
+			// Apply stats:
+			if itemTypeX.isEquipment()
+				heroUnitX.unitStatBuffer.apply(itemTypeX.stats)
+			// Add attachments:
+			if itemTypeX.attachment1.model != ""
+				itemX.attachmentSfx1 = heroUnitX.u.addEffect(itemTypeX.attachment1.model, itemTypeX.attachment1.point)
+			if itemTypeX.attachment2.model != ""
+				itemX.attachmentSfx2 = heroUnitX.u.addEffect(itemTypeX.attachment2.model, itemTypeX.attachment2.point)
+		else
+			// invalid, drop item
+			blockEvents = true
+			UnitRemoveItem(heroUnitX.u, modifiedItem)
+			blockEvents = false
+	
+	function dropItem(item modifiedItem)
+		let itemX = modifiedItem.getItemX()
+		let itemTypeX = itemX.itemType
+		// Switch hero dummy:
+		if itemTypeX.isEquipment() and itemTypeX.equipmentSlot == EquipmentSlot.MAINHAND
+			heroUnitX.changeDummyDefault()
+		// Remove stats:
+		if itemTypeX.isEquipment()
+			heroUnitX.unitStatBuffer.remove(itemTypeX.stats)
+		// Remove attachments:
+		if itemX.attachmentSfx1 != null
+			itemX.attachmentSfx1.destr()
+		if itemX.attachmentSfx2 != null
+			itemX.attachmentSfx2.destr()
+	
+	function validate() returns boolean
+		// Only one item of each EquipmentSlot:
+		for n = 0 to 5
+			tmpArray[n] = 0
+		let iter = new InventoryIterator(heroUnitX.u)
+		for item itm from iter
+			var itemX = itm.getItemX()
+			if itemX.itemType.isEquipment()
+				tmpArray[itemX.itemType.equipmentSlot castTo int]++
+		iter.close()
+		for n = 0 to 5
+			if tmpArray[n] > 1
+				simError(heroUnitX.u.getOwner(), "You already wear an item for that slot.")
+				return false
+		return true
+	
+//	/**
+//	 * Returns the first item of the specified EquipmentClass the hero carries.
+//	 * Returns null if the hero doesnt have a item of the specified EquipmentClass.
+//	 */
+//	function getEquipmentOfClass(EquipmentClass equipmentClass) returns ItemX
+//		ItemX ret = null
+//		let iter = new InventoryIterator(u)
+//		for item itm from iter
+//			var itemX = itm.getItemX()
+//			if itemX.itemType.isEquipment() and itemX.itemType.equipmentClass == equipmentClass
+//				ret = itemX
+//				break
+//		iter.close()
+//		return ret
+//
+//	/**
+//	 * Returns the first item of the specified EquipmentSlot the hero carries.
+//	 * Returns null if the hero doesnt have a item of the specified EquipmentSlot.
+//	 */
+//	function getEquipmentOfSlot(EquipmentSlot equipmentSlot) returns ItemX
+//		ItemX ret = null
+//		let iter = new InventoryIterator(u)
+//		for item itm from iter
+//			var itemX = itm.getItemX()
+//			if itemX.itemType.isEquipment() and itemX.itemType.equipmentSlot == equipmentSlot
+//				ret = itemX
+//				break
+//		iter.close()
+//		return ret
+	
+	construct(HeroUnitX heroUnitX)
+		this.heroUnitX = heroUnitX
+		itemTakeTrigger = CreateTrigger()
+			..registerUnitEvent(heroUnitX.u, EVENT_UNIT_PICKUP_ITEM)
+			..addAction(function invokeTakeItem)
+		itemDropTrigger = CreateTrigger()
+			..registerUnitEvent(heroUnitX.u, EVENT_UNIT_DROP_ITEM)
+			..addAction(function invokeDropItem)
+		map.put(itemTakeTrigger, this)
+		map.put(itemDropTrigger, this)
+	
+	ondestroy
+		map.remove(itemTakeTrigger)
+		map.remove(itemDropTrigger)
+		itemTakeTrigger.destr()
+		itemDropTrigger.destr()
+		
+
+HashMap<trigger, HeroInventory> map = new HashMap<trigger, HeroInventory>()
+int array tmpArray // shared array for temporary immediate use, clean before using
+boolean blockEvents = false
+
+function invokeTakeItem()
+	if not blockEvents
+		map.get(GetTriggeringTrigger()).takeItem(GetManipulatedItem())
+	
+function invokeDropItem()
+	if not blockEvents
+		map.get(GetTriggeringTrigger()).dropItem(GetManipulatedItem())

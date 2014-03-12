@@ -1,0 +1,65 @@
+package Maptest
+import APT
+import UnitX
+import HeroUnitX
+import UnitTypeX
+import ItemX
+import CreepUnitX
+import EquipmentClassList
+import TestUtils
+
+HeroUnitX array playerHeroes
+
+function startGame()
+	// Spawn player heroes:
+	for n = 0 to NUM_OF_PLAYERS-1
+		if GetPlayerSlotState(Player(n)) == PLAYER_SLOT_STATE_PLAYING and GetPlayerController(Player(n)) == MAP_CONTROL_USER
+			playerHeroes[n] = new HeroUnitX(Player(n), vec2(0., 0), angle(0.))
+			playerHeroes[n].u.addAbility('A000')
+	// Workaround: add healspell to heroes
+	periodicEvent(1., () -> begin
+		for n = 0 to NUM_OF_PLAYERS-1
+			if playerHeroes[n].u != null
+				playerHeroes[n].u.addAbility('A000')
+	end)
+	// Spawn some units:
+	new CreepUnitX('h000', vec2(-1600., -1800.), angle(0.)) // bottom left knights
+	new CreepUnitX('h000', vec2(-1600., -2000.), angle(0.))
+	new CreepUnitX('h000', vec2(-1400., -2000.), angle(0.))
+	new CreepUnitX('h000', vec2(1600., -1800.), angle(0.)) // bottom right knights
+	new CreepUnitX('h000', vec2(1600., -2000.), angle(0.))
+	new CreepUnitX('h000', vec2(1400., -2000.), angle(0.))
+	new CreepUnitX('h001', vec2(-1600., 1800.), angle(0.)) // top left wolfs
+	new CreepUnitX('h001', vec2(-1600., 2000.), angle(0.))
+	new CreepUnitX('h001', vec2(-1400., 2000.), angle(0.))
+	new CreepUnitX('h001', vec2(1600., 1800.), angle(0.)) // top right wolfs
+	new CreepUnitX('h001', vec2(1600., 2000.), angle(0.))
+	new CreepUnitX('h001', vec2(1400., 2000.), angle(0.))
+	
+	// Spawn some items:
+	new ItemX('I000', vec2(0., 0.))
+	new ItemX('I000', vec2(0., 0.))
+	new ItemX('I000', vec2(0., 0.))
+	new ItemX('I001', vec2(0., 0.))
+	new ItemX('I001', vec2(0., 0.))
+	new ItemX('I001', vec2(0., 0.))
+	new ItemX('I002', vec2(0., 0.))
+	new ItemX('I002', vec2(0., 0.))
+	new ItemX('I002', vec2(0., 0.))
+	new ItemX('I003', vec2(0., 0.))
+	new ItemX('I003', vec2(0., 0.))
+	new ItemX('I004', vec2(0., 0.))
+	new ItemX('I004', vec2(0., 0.))
+	new ItemX('I004', vec2(0., 0.))
+	new ItemX('I004', vec2(0., 0.))
+
+init
+	// After 1 second start game:
+	timeEvent(1, () -> startGame())
+	
+//	// Morph test:
+//	hero = new HeroUnitX(Player(0), vec2(0., 0), angle(0.))
+//	new HeroUnitX(Player(0), vec2(0., 50), angle(0.))
+//	chatEvent("-morph 1", () -> hero.changeDummy(EquipmentClass.BOW , DamageType.PIERCING))
+//	chatEvent("-morph 1", () -> hero.changeDummy(EquipmentClass.AXE , DamageType.BLUNT))
+//	print("Finished init!")

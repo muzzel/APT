@@ -1,0 +1,71 @@
+package UnitTypeGen
+import StatHandler
+import UnitObjEditing
+import ObjectIds
+import UnitTypeX
+import UnitTypeList
+
+// State machine:
+UnitTypeX currentUnitTypeX
+// State machine (compiletime):
+UnitDefinition currentUnitDefinition
+
+public function unitgenNewCreep(int raw, int baseRaw,  int level, string name, int life, int mana, int damage, int armor, int attackspeed, int movespeed) returns int
+	let baseStats = new UnitBaseStatBuffer(raw)
+		..set(Stat.LIFE, life)
+		..set(Stat.MANA, mana)
+		..set(Stat.DAMAGE, damage)
+		..set(Stat.ARMOR, armor)
+		..set(Stat.ASPD, attackspeed)
+		..set(Stat.MS, movespeed)
+	currentUnitTypeX = new UnitTypeX(raw, baseStats)
+	if compiletimeMode
+		currentUnitDefinition = new UnitDefinition(raw, baseRaw)
+			..setName(name)
+			..setLevel(level)
+			..setHitPointsMaximumBase(life)
+			..setManaMaximum(mana)
+			..setHitPointsRegenerationRate(0)
+			..setManaRegeneration(0)
+			..setAttack1DamageBase(damage-1)
+			..setAttack1DamageNumberofDice(1)
+			..setAttack1DamageSidesperDie(1)
+			..setAttacksEnabled(1)
+			..setDefenseBase(armor)
+			..setAttack1CooldownTime(attackspeed*0.01)
+			..setSpeedBase(movespeed)
+			..setNormalAbilities("")
+			..setDefaultActiveAbility("")
+			..setDependencyEquivalents("")
+			..setDefenseUpgradeBonus(0)
+			..setStructuresBuilt("")
+			..setRequirements("")
+			..setRequirementsLevels("")
+			..setDescription("")
+			..setNameEditorSuffix("")
+			..setHotkey("")
+			..setTooltipBasic("")
+			..setTooltipExtended("")
+			..setUnitClassification("")
+			..setFoodCost(0)
+			..setGoldBountyAwardedBase(0)
+			..setGoldBountyAwardedNumberofDice(0)
+			..setPointValue(0)
+			..setSleeps(false)
+			..setSightRadiusNight(700)
+			..setSightRadiusDay(700)
+			..setRace("orc")
+	return raw
+
+public function unitgenSetStats() returns UnitBaseStatBuffer
+	return currentUnitTypeX.unitBaseStatBuffer
+
+boolean compiletimeMode
+
+@compiletime function genObjects()
+	compiletimeMode = true
+	initUnitTypeLists()
+			
+init
+	compiletimeMode = false
+	initUnitTypeLists()

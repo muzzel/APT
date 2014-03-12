@@ -1,0 +1,14 @@
+## TODO: ##
+
+APT.units.UnitTypeGen:
+	add DamageType to unitgen functions
+
+APT.items.ItemTypeGen:
+	- Add compiletime functions to generate actual objectdata
+	- Add functions to set equipment stats
+
+APT.units.UnitX:
+	recycle units instead of letting them die
+
+APT.units.UnitTypeGen:
+	add damage and armor type to unit gen functions.

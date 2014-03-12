@@ -1,0 +1,44 @@
+package UnitX
+import UnitTypeX
+import StatHandler
+import BuffHandler
+import DamageHandler
+
+// Unit indexing function.
+public function getUnitIndex(unit u) returns int
+	return u.getUserData()
+
+// Retrieves the UnitX object for the specified unit.
+public function unit.getUnitX() returns UnitX
+	return this.getUserData() castTo UnitX
+
+public abstract class UnitX
+	UnitTypeX unitTypeX
+	unit u
+	player owner
+	// Stats, Damage, Buffs:
+	UnitStatBuffer unitStatBuffer
+	UnitDamageHandler unitDamageHandler
+	BuffList buffList
+	
+	construct(player owner, UnitTypeX unitTypeX, vec2 pos, angle facing)
+		this.unitTypeX = unitTypeX
+		this.owner = owner
+		this.u = createUnit(owner, unitTypeX.raw, pos, facing)
+		u.setUserData(this castTo int)
+		// Stats, Damage, Buffs, Threat:
+		unitStatBuffer = new UnitStatBuffer(u, unitTypeX.unitBaseStatBuffer)
+		unitDamageHandler = new UnitDamageHandler(this, unitTypeX.damageType)
+//		buffList = new BuffList(u)
+	
+	ondestroy
+		RemoveUnit(u)
+		destroy unitStatBuffer
+		destroy unitDamageHandler
+//		destroy buffList
+	
+	function getUnit() returns unit
+		return u
+	
+	function getUnitTypeX() returns UnitTypeX
+		return unitTypeX

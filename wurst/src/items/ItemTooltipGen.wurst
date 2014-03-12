@@ -1,0 +1,170 @@
+package ItemTooltipGen
+import StatHandler
+import EquipmentQualityList
+import EquipmentClassList
+import EquipmentSlotList
+import DamageTypeList
+
+string tooltipHeader
+string tooltipStats
+string tooltipDescription
+
+public function tooltipReset()
+	tooltipHeader = ""
+	tooltipStats = ""
+	tooltipDescription = ""
+
+public function tooltipAddStatList(StatList statList)
+	let iter = statList.iterator()
+	for Stat s from iter
+		if tooltipStats != ""
+			tooltipStats += "\n"
+		tooltipStats = tooltipStats + tooltipConvertStat(s, iter.currentValue())
+	iter.close()
+
+public function tooltipAddDescription(string description)
+	tooltipDescription = description
+
+public function tooltipAddEquipmentProperties(EquipmentSlot equipmentSlot, EquipmentClass equipmentClass, DamageType mainhandDamageType)
+	tooltipHeader = "|cffB3B3B3"
+	switch equipmentSlot
+		case MAINHAND
+			tooltipHeader += "Mainhand"
+		case OFFHAND
+			tooltipHeader += "Offhand"
+		case CHEST
+			tooltipHeader += "Chest"
+		case HELMET
+			tooltipHeader += "Helmet"
+		case GLOVES
+			tooltipHeader += "Gloves"
+		case ACCESSORY
+			tooltipHeader += "Accessory"
+	tooltipHeader += " - "
+	switch equipmentClass
+		case SWORD
+			tooltipHeader += "Sword"
+		case AXE
+			tooltipHeader += "Axe"
+		case DAGGER
+			tooltipHeader += "Dagger"
+		case TWOHANDED
+			tooltipHeader += "Twohanded"
+		case STAFF
+			tooltipHeader += "Staff"
+		case WAND
+			tooltipHeader += "Wand"
+		case BOW
+			tooltipHeader += "Bow"
+		case GUN
+			tooltipHeader += "Gun"
+		case SHIELD
+			tooltipHeader += "Shield"
+		case ORB
+			tooltipHeader += "Orb"
+		case QUIVER
+			tooltipHeader += "Quiver"
+		case KNIFE
+			tooltipHeader += "Knife"
+		case CHAIN
+			tooltipHeader += "Chain"
+		case LEATHER
+			tooltipHeader += "Leather"
+		case CLOTH
+			tooltipHeader += "Cloth"
+		case ACCESSORY
+			tooltipHeader += "Accessory"
+	tooltipHeader += "|r"
+	if equipmentSlot == EquipmentSlot.MAINHAND
+		tooltipHeader += "\n|cffB3B3B3Damage Type:|r "
+		switch mainhandDamageType
+			case NORMAL
+				tooltipHeader += "Normal"
+			case BLUNT
+				tooltipHeader += "Blunt"
+			case PIERCING
+				tooltipHeader += "Piercing"
+			case MAGIC
+				tooltipHeader += "Magic"
+			case FIRE
+				tooltipHeader += "Fire"
+	
+public function tooltipGet() returns string
+	string tooltip = ""
+	// Add header:
+	if tooltipHeader != ""
+		tooltip += tooltipHeader
+	// Add stats:
+	if tooltipStats != ""
+		if tooltip != ""
+			tooltip += "\n\n"
+		tooltip += tooltipStats
+	// Add description:
+	if tooltipDescription != ""
+		if tooltip != ""
+			tooltip += "\n\n"
+		tooltip += tooltipDescription
+	return tooltip
+
+public function tooltipColorizeItemName(string itemName, EquipmentQuality equipmentQuality) returns string
+	string name = ""
+	switch equipmentQuality
+		case NORMAL
+			name = itemName
+		case RARE
+			name = "|cff3B85ED" + itemName + "|r"
+		case EPIC
+			name = "|cffA938FF" + itemName + "|r"
+	return name
+	
+
+function tooltipConvertStat(Stat stat, int value) returns string
+	var name = ""
+	var valueConverted = value
+	var sign = "+"
+	var suffix = ""
+	switch stat
+		case LIFE
+			name = "Life" 
+		case MANA
+			name = "Mana"
+		case LIFEREG
+			name = "Lifereg"
+		case MANAREG
+			name = "Manareg"
+		case STR
+			name = "Str"
+		case AGI
+			name = "Agi"
+		case INT
+			name = "Int"
+		case DAMAGE
+			name = "Damage"
+		case DAMAGE_PERC
+			name = "Damage"
+			suffix = "%"
+		case ARMOR
+			name = "Armor"
+		case ASPD
+			name = "Aspd"
+			suffix = "%"
+		case MS
+			name = "Movespeed"
+		case EVA
+			name = "Evasion"
+			suffix = "%"
+		case CC
+			name = "Critchance"
+			suffix = "%"
+		case CM
+			name = "Critdamage"
+			suffix = "%"
+		case CB
+			name = "Critbonus"
+		case HEALREC
+			name = "Heal Received"
+			suffix = "%"
+		case ATTACKTHREAT
+			name = "Attack Threat"
+			suffix = "%"
+	return name + " " + sign + valueConverted.toString() + suffix

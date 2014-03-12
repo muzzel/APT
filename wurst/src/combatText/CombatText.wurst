@@ -1,0 +1,33 @@
+package CombatText
+import Colors
+import Texttag
+
+public function combatTextDamage(unit source, unit target, real dmg)
+	createTTEx(target.getPos3fake(), vec2(GetRandomReal(-0.02, 0.02), 0.04), R2I(dmg).toString(), 8., 1.2, colorA(255, 255, 255, 255), GetOwningPlayer(source))
+	..setPermanent(false)
+	..setFadepoint(0.6)
+	
+public function combatTextCrit(unit source, unit target, real dmg)
+	createTTEx(target.getPos3fake(), vec2(GetRandomReal(-0.02, 0.02), 0.04), R2I(dmg).toString() + "!", 8., 1.2, colorA(255, 0, 0, 255), GetOwningPlayer(source))
+	..setPermanent(false)
+	..setFadepoint(0.6)
+	
+public function combatTextEvade(unit source, unit target)
+	createTTEx(target.getPos3fake(), vec2(GetRandomReal(-0.02, 0.02), 0.04), "dodge", 8., 1.2, colorA(255, 255, 255, 255), GetOwningPlayer(source))
+	..setPermanent(false)
+	..setFadepoint(0.6)
+
+public function combatTextSpelldamage(unit source, unit target, real dmg)
+	createTTEx(target.getPos3fake(), vec2(GetRandomReal(-0.02, 0.02), 0.04), R2I(dmg).toString(), 8., 1.2, colorA(255, 0, 255, 255), GetOwningPlayer(source))
+	..setPermanent(false)
+	..setFadepoint(0.6)
+	
+public function combatTextHeal(unit source, unit target, real heal)
+	createTTEx(target.getPos3fake(), vec2(GetRandomReal(-0.02, 0.02), 0.04), R2I(heal).toString(), 8., 1.2, colorA(0, 255, 0, 255), GetOwningPlayer(source))
+	..setPermanent(false)
+	..setFadepoint(0.6)
+	
+public function combatTextMana(unit source, unit target, real mana)
+	createTTEx(target.getPos3fake(), vec2(GetRandomReal(-0.02, 0.02), 0.04), R2I(mana).toString(), 8., 1.2, colorA(0, 0, 255, 255), GetOwningPlayer(source))
+	..setPermanent(false)
+	..setFadepoint(0.6)

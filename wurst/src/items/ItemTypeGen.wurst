@@ -1,0 +1,57 @@
+package ItemTypeGen
+import ObjEditingNatives
+import ItemTypeX
+import ItemTypeList
+import StatHandler
+import ItemTooltipGen
+import EquipmentQualityList
+import DamageTypeList
+import Attachment
+
+// State machine:
+ItemTypeX currentItemTypeX
+// State machine (compiletime):
+ObjectDefinition currentObjectDefinition
+
+// Creates a new instance of ItemTypeX initialized with ItemClass.EQUIPMENT.
+public function itemgenNewEquipment(int raw, EquipmentQuality equipmentQuality, EquipmentSlot equipmentSlot, EquipmentClass equipmentClass, DamageType mainhandDamageType, string name, string description, string icon) returns int
+	currentItemTypeX = new ItemTypeX(raw)
+	currentItemTypeX.initPropertiesEquipment(equipmentSlot, equipmentClass, mainhandDamageType)
+	if compiletimeMode
+		tooltipReset()
+		tooltipAddEquipmentProperties(equipmentSlot, equipmentClass, mainhandDamageType)
+		tooltipAddDescription(description)
+		let tt = tooltipGet()
+		currentObjectDefinition = createObjectDefinition("w3t", raw, 'ches')
+			..setString("unam", tooltipColorizeItemName(name, equipmentQuality))
+			..setString("iico", icon)
+			..setString("utub", tt)
+			..setString("ides", tt)
+	return raw
+
+/** Sets stats for the current ItemTypeX object. */
+public function itemgenSetStats(StatList statList)
+	if compiletimeMode
+		tooltipAddStatList(statList)
+		let tt = tooltipGet()
+		currentObjectDefinition.setString("utub", tt)
+		currentObjectDefinition.setString("ides", tt)
+
+public function stats() returns StatList
+	return currentItemTypeX.stats
+
+/** Sets attachments for the current ItemTypeX object. */
+public function itemgenSetAttachment(attachment attachment1, attachment attachment2)
+	if not compiletimeMode
+		currentItemTypeX.attachment1 = attachment1
+		currentItemTypeX.attachment2 = attachment2
+
+boolean compiletimeMode
+
+@compiletime function genObjects()
+	compiletimeMode = true
+	initItemTypeLists()
+			
+init
+	compiletimeMode = false
+	initItemTypeLists()

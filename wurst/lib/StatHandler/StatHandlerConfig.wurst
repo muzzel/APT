@@ -1,0 +1,65 @@
+package StatHandlerConfig
+import StatHandler
+import BonusHandler
+//import public UnitX // Unit indexer // Cyclic dependency problem, hardcoded getUnitIndex
+
+///**
+// * Make this function return a unique index if you want to use the unit extension functions.
+// * You can also comment it out and "import public" a package which provides this function.
+// */
+public function getUnitIndex(unit u) returns int
+	return u.getUserData()
+
+/** List your stats here. */
+public enum Stat
+	LIFE // absolute
+	MANA // absolute
+	LIFEREG // absolute, per second
+	MANAREG // absolute, per second
+	STR // absolute
+	AGI // absolute
+	INT // absolute
+	DAMAGE // absolute
+	DAMAGE_PERC // %
+	ARMOR // absolute
+	ASPD // %
+	MS // absolute
+	EVA // %
+	CC // % critchance
+	CM // % critmultiplicator 
+	CB // absolute critbonus
+	HEALREC // % heal received increase
+	ATTACKTHREAT
+	// TODO: magic resists, magic powers, damage resists
+
+/**
+ * Register all your stats here. Available functions:
+ * - Linear stat:
+ *		registerStatLin(Stat stat)
+ * - Exponential stat:
+ *		registerStatExp(Stat stat)
+ * - Logistic stat:
+ *		registerStatLog(Stat stat)
+ * - Linear stat with linear substat:
+ *		registerStatLinLin(Stat stat, Stat substat)
+ * - Linear stat with exponential substat:
+ *		registerStatLinExp(Stat stat, Stat substat)
+ */
+public function statRegistry()
+	registerStatLin(Stat.LIFE, (unit u, Stat s) -> setUnitBonus(u, Bonus.LIFE, u.getStat(Stat.LIFE)-u.getBaseStat(Stat.LIFE)))
+	registerStatLin(Stat.MANA, (unit u, Stat s) -> setUnitBonus(u, Bonus.MANA, u.getStat(Stat.MANA)-u.getBaseStat(Stat.MANA)))
+	registerStatLin(Stat.LIFEREG, (unit u, Stat s) -> setUnitBonus(u, Bonus.LIFEREGEN, u.getStat(Stat.LIFEREG)-u.getBaseStat(Stat.LIFEREG)))
+	registerStatLin(Stat.MANAREG, (unit u, Stat s) -> setUnitBonus(u, Bonus.MANAREGEN, u.getStat(Stat.MANAREG)-u.getBaseStat(Stat.MANAREG)))
+	registerStatLin(Stat.STR, (unit u, Stat s) -> setUnitBonus(u, Bonus.STRENGTH, u.getStat(Stat.STR)-u.getBaseStat(Stat.STR)))
+	registerStatLin(Stat.AGI, (unit u, Stat s) -> setUnitBonus(u, Bonus.AGILITY, u.getStat(Stat.AGI)-u.getBaseStat(Stat.AGI)))
+	registerStatLin(Stat.INT, (unit u, Stat s) -> setUnitBonus(u, Bonus.INTELLIGENCE, u.getStat(Stat.INT)-u.getBaseStat(Stat.INT)))
+	registerStatLinExp(Stat.DAMAGE, Stat.DAMAGE_PERC, (unit u, Stat s) -> setUnitBonus(u, Bonus.DAMAGE, u.getStat(Stat.DAMAGE)-u.getBaseStat(Stat.DAMAGE)))
+	registerStatLin(Stat.ARMOR, (unit u, Stat s) -> setUnitBonus(u, Bonus.ARMOR, u.getStat(Stat.ARMOR)-u.getBaseStat(Stat.ARMOR)))
+	registerStatExp(Stat.ASPD, (unit u, Stat s) -> setUnitBonus(u, Bonus.ATTACKSPEED, u.getStat(Stat.ASPD))) // Ignore base attackspeed
+	registerStatLin(Stat.MS, (unit u, Stat s) -> u.setMoveSpeed(1.*u.getStat(Stat.MS)))
+	registerStatLog(Stat.EVA)
+	registerStatLog(Stat.CC)
+	registerStatExp(Stat.CM)
+	registerStatLin(Stat.CB)
+	registerStatExp(Stat.HEALREC)
+	registerStatExp(Stat.ATTACKTHREAT)

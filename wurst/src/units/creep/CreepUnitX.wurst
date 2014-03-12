@@ -1,0 +1,16 @@
+package CreepUnitX
+import UnitX
+import UnitTypeX
+import DamageHandler
+import ThreatHandler
+
+public class CreepUnitX extends UnitX
+	// ThreatHandler
+	private ThreatHandlerTU tu
+	
+	construct(int raw, vec2 pos, angle facing)
+		super(Player(PLAYER_NEUTRAL_AGGRESSIVE), raw.getUnitTypeX(), pos, facing)
+		tu = new ThreatHandlerTU(u)
+	
+	function getThreatHandlerTU() returns ThreatHandlerTU
+		return tu

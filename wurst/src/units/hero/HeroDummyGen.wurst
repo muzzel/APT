@@ -1,0 +1,193 @@
+package HeroDummyGen
+import UnitObjEditing
+import AbilityObjEditing
+import ObjectIds
+import DamageTypeList
+import EquipmentClassList
+import HeroDummyList
+import HashMap
+import HeroUnitTypeX
+import StatHandler
+
+int HERO_DUMMY_DEFAULT_RAW = 'H011'
+HeroUnitTypeX HERO_TYPE = null
+
+// State machine (compiletime):
+HeroDefinition currentHeroDefinition
+
+/** Returns the raw id for the default heroes (naked hero with no weapon) dummy. */
+public function getHeroDummyRawDefault() returns int
+	return HERO_DUMMY_DEFAULT_RAW
+
+/** Use this to get the UnitTypeX/UnitTypeHero for a hero. */
+public function getUnitTypeHero() returns HeroUnitTypeX
+	if HERO_TYPE == null
+		printWarning("APT.units.hero.lists.HeroTypeList: HERO_TYPE is null")
+	return HERO_TYPE
+		
+/** Changes a heroes dummy. */
+public function changeHeroDummy(unit u, EquipmentClass eqClass, DamageType dmgType)
+		let currentUnitRaw = GetUnitTypeId(u)
+		let newUnitRaw = getHeroDummyId(eqClass, dmgType)
+		if currentUnitRaw != newUnitRaw
+			let unmorph = getDummyUnmorphAbility(currentUnitRaw)
+			let morph = getDummyMorphAbility(newUnitRaw)
+			u.addAbility(unmorph)
+			u.removeAbility(unmorph)
+			u.addAbility(morph)
+			u.removeAbility(morph)
+
+/** Gets the unittype for a herodummy for the specified EquipmentClass and DamageType. */
+function getHeroDummyId(EquipmentClass eqClass, DamageType dmgType) returns int
+	return map.loadInt(eqClass castTo int, dmgType castTo int)
+
+/** Gets the ability to morph the specified dummyunit to the default dummy. */
+function getDummyMorphAbility(int dummyRaw) returns int
+	return morphAbilities.get(dummyRaw)
+
+/** Gets the ability to morph the default dummy to the specified dummyunit. */
+function getDummyUnmorphAbility(int dummyRaw) returns int
+	return unmorphAbilities.get(dummyRaw)
+	
+public function put(EquipmentClass eqClass, DamageType dmgType, int raw)
+	if not compiletimeMode
+		map.saveInt(eqClass castTo int, dmgType castTo int, raw)
+
+public function herogenNewRanged(int life, int mana, int damage, int armor, int attackspeed, int movespeed, int range, DamageType damageType, real projArc, string projModel, int projSpeed) returns int
+	let raw = herogenNew('Hamg', life, mana, damage, armor, attackspeed, movespeed, range, damageType)
+	if compiletimeMode
+		currentHeroDefinition.setAttack1ProjectileArc(projArc)
+		currentHeroDefinition.setAttack1ProjectileArt(projModel)
+		currentHeroDefinition.setAttack1ProjectileSpeed(projSpeed)
+	return raw
+
+public function herogenNewMelee(int life, int mana, int damage, int armor, int attackspeed, int movespeed, int range, DamageType damageType) returns int
+	return herogenNew('Hpal', life, mana, damage, armor, attackspeed, movespeed, range, damageType)
+
+public function herogenInitHero(int life, int mana, int damage, int armor, int attackspeed, int movespeed, DamageType damageType)
+	let baseStats = new UnitBaseStatBuffer(HERO_DUMMY_DEFAULT_RAW)
+		..set(Stat.LIFE, life)
+		..set(Stat.MANA, mana)
+		..set(Stat.DAMAGE, damage)
+		..set(Stat.ARMOR, armor)
+		..set(Stat.ASPD, attackspeed)
+		..set(Stat.MS, movespeed)
+	HERO_TYPE = new HeroUnitTypeX(HERO_DUMMY_DEFAULT_RAW, baseStats)
+	HERO_TYPE.damageType = damageType
+
+function herogenNew(int baseRaw, int life, int mana, int damage, int armor, int attackspeed, int movespeed, int range, DamageType damageType) returns int
+	let raw = heroDummyBaseRaw
+	heroDummyBaseRaw++
+	genMorphAbilitiesForDummy(raw)
+	if compiletimeMode
+		currentHeroDefinition = new HeroDefinition(raw, baseRaw)
+		..setProperNames("") // Hero settings ...
+		..setProperNamesUsed(1)
+		..setDefenseType("hero")
+		..setAttack1AttackType(damageType2string(damageType))
+		..setAttack1Range(range)
+		..setHeroAbilities("")
+		..setScalingValue(1.)
+		..setModelFile("war3mapImported\\VillagerMan_ManyAnimations.mdx")
+		..setIconGameInterface("ReplaceableTextures\\CommandButtons\\BTNVillagerMan.blp")
+		..setStartingStrength(0)
+		..setStrengthPerLevel(0.00)
+		..setStartingAgility(0)
+		..setAgilityPerLevel(0.00)
+		..setStartingIntelligence(0)
+		..setIntelligencePerLevel(0.00)
+		..setSelectionScale(1.1)
+		..setShadowImageWidth(170.)
+		..setShadowImageHeight(170.)
+		..setShadowImageCenterX(65.)
+		..setShadowImageCenterX(65.)
+		..setTargetedAs("ground")
+		..setName("Adventurer") // General unit settings..
+		..setHitPointsMaximumBase(life)
+		..setManaMaximum(mana)
+		..setHitPointsRegenerationRate(0.00)
+		..setManaRegeneration(0.00)
+		..setAttack1DamageBase(damage-1)
+		..setAttack1DamageNumberofDice(1)
+		..setAttack1DamageSidesperDie(1)
+		..setAttacksEnabled(1)
+		..setDefenseBase(armor)
+		..setAttack1CooldownTime(attackspeed*0.01)
+		..setSpeedBase(movespeed)
+		..setNormalAbilities("AInv") // Hero inventory
+		..setDefaultActiveAbility("")
+		..setDependencyEquivalents("")
+		..setDefenseUpgradeBonus(0)
+		..setRequirements("")
+		..setRequirementsLevels("")
+		..setDescription("")
+		..setNameEditorSuffix("")
+		..setHotkey("")
+		..setTooltipBasic("")
+		..setTooltipExtended("")
+		..setUnitClassification("")
+		..setFoodCost(0)
+		..setGoldBountyAwardedBase(0)
+		..setGoldBountyAwardedNumberofDice(0)
+		..setPointValue(0)
+		..setSleeps(false)
+		..setSightRadiusNight(700)
+		..setSightRadiusDay(700)
+		..setRace("human")
+	return raw
+		
+function genMorphAbilitiesForDummy(int dummyRaw)
+	let defaultRaw = getHeroDummyRawDefault()
+	let morphAbil = genMorphAbility(defaultRaw, dummyRaw)
+	let unmorphAbil = genMorphAbility(dummyRaw, defaultRaw)
+	if not compiletimeMode
+		morphAbilities.put(dummyRaw, morphAbil)
+		unmorphAbilities.put(dummyRaw, unmorphAbil)
+
+function genMorphAbility(int fromRaw, int toRaw) returns int
+	let abilRaw = morphAbilityBaseRaw
+	morphAbilityBaseRaw++
+	if compiletimeMode
+		AbilityDefinitionBearform def = new AbilityDefinitionBearform(abilRaw)
+		def.setNormalFormUnit(1, idInteger2IdString(toRaw))
+		def.setAlternateFormUnit(1, idInteger2IdString(fromRaw))
+		def.setRequirements("")
+		def.setRequirementsLevels("")
+		def.setDurationNormal(1, 0.)
+		def.setManaCost(1, 0)
+		def.setName("HeroDummyMorph")
+	return abilRaw
+	
+/** Converts DamageType to internally used strings of the object editor. */
+function damageType2string(DamageType damageType) returns string
+	string ret = ""
+	switch damageType
+		case NORMAL
+			ret = "normal"
+		case BLUNT
+			ret = "siege"
+		case PIERCING
+			ret = "pierce"
+		case MAGIC
+			ret = "magic"
+		case FIRE
+			ret = "hero"
+	return ret
+	
+// maps EquipmentClass x DamageType -> dummyRaw:
+hashtable map = InitHashtable()
+// maps dummyRaw -> morphAbilityRaw
+HashMap<int, int> morphAbilities = new HashMap<int, int>()
+// maps dummyRaw -> unmorphAbilityRaw
+HashMap<int, int> unmorphAbilities = new HashMap<int, int>()
+boolean compiletimeMode
+int morphAbilityBaseRaw = 'AM00'
+int heroDummyBaseRaw = HERO_DUMMY_DEFAULT_RAW
+	
+@compiletime function genObjects()
+	compiletimeMode = true
+	initHeroDummyLists()
+
+init
+	compiletimeMode = false
+	initHeroDummyLists()

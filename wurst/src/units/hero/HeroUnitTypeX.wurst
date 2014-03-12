@@ -1,0 +1,10 @@
+package HeroUnitTypeX
+import UnitTypeX
+import StatHandler
+
+public class HeroUnitTypeX extends UnitTypeX
+	// TODO: function for adding additional raw codes for other base units
+	// Override getTypeId, getDamageType(), etc.
+	
+	construct(int baseRawId, UnitBaseStatBuffer unitBaseStatBuffer)
+		super(baseRawId, unitBaseStatBuffer)
