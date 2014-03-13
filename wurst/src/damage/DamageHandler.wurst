@@ -43,6 +43,8 @@ public function unitDamageTarget(unit source, unit target, real damage, DamageTy
 			real threat = dmg
 			threat *= (1+source.getStat(Stat.ATTACKTHREAT)*0.01)
 			modifyThreat(source, target, threat, true)
+		if target.getHP() < 0.405
+			target.getUnitX().onDeath() // unit dies
 	// Floating text
 	if isCrit
 		combatTextCrit(source, target, dmg)

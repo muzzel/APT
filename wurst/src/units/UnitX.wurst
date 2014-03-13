@@ -31,6 +31,9 @@ public abstract class UnitX
 		unitDamageHandler = new UnitDamageHandler(this, unitTypeX.damageType)
 //		buffList = new BuffList(u)
 	
+	function onDeath()
+		destroy this
+	
 	ondestroy
 		RemoveUnit(u)
 		destroy unitStatBuffer

@@ -14,12 +14,28 @@ public class HeroUnitX extends UnitX
 	// ThreatHandler
 	private ThreatHandlerPU pu
 	HeroInventory heroInventory
+	vec2 revivePos
 	
 	construct(player owner, vec2 pos, angle facing)
 		super(owner, getUnitTypeHero(), pos, facing)
 		pu = new ThreatHandlerPU(u)
 		heroInventory = new HeroInventory(this)
 		changeDummyDefault()
+		revivePos = vec2(0., 0.)
+	
+	function setRevivePos(vec2 pos)
+		revivePos = pos
+	
+	override function onDeath()
+		// TODO: reset bufflist
+		destroy pu
+		getTimer()..setData(this castTo int)..start(20., () -> begin
+			GetExpiredTimer().getData() castTo thistype.revive()
+		end)
+	
+	private function revive()
+		ReviveHero(u, revivePos.x, revivePos.y, false)
+		pu = new ThreatHandlerPU(u)
 	
 	function getThreatHandlerPU() returns ThreatHandlerPU
 		return pu
