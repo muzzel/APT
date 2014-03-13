@@ -4,7 +4,6 @@ import public EquipmentClassList
 import DamageTypeList
 import StatHandler
 import HashMap
-import Attachment
 
 HashMap<int, ItemTypeX> raw2ItemType = new HashMap<int, ItemTypeX>()
 
@@ -27,8 +26,6 @@ public class ItemTypeX
 	EquipmentClass equipmentClass
 	DamageType mainhandDamageType
 	StatList stats
-	attachment attachment1
-	attachment attachment2
 	// TODO: Material/Potion/etc. properties (add initPropertiesXXX function).
 	
 	construct(int raw)

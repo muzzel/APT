@@ -25,11 +25,6 @@ public class HeroInventory
 			// Apply stats:
 			if itemTypeX.isEquipment()
 				heroUnitX.unitStatBuffer.apply(itemTypeX.stats)
-			// Add attachments:
-			if itemTypeX.attachment1.model != ""
-				itemX.attachmentSfx1 = heroUnitX.u.addEffect(itemTypeX.attachment1.model, itemTypeX.attachment1.point)
-			if itemTypeX.attachment2.model != ""
-				itemX.attachmentSfx2 = heroUnitX.u.addEffect(itemTypeX.attachment2.model, itemTypeX.attachment2.point)
 		else
 			// invalid, drop item
 			blockEvents = true
@@ -45,11 +40,6 @@ public class HeroInventory
 		// Remove stats:
 		if itemTypeX.isEquipment()
 			heroUnitX.unitStatBuffer.remove(itemTypeX.stats)
-		// Remove attachments:
-		if itemX.attachmentSfx1 != null
-			itemX.attachmentSfx1.destr()
-		if itemX.attachmentSfx2 != null
-			itemX.attachmentSfx2.destr()
 	
 	function validate() returns boolean
 		// Only one item of each EquipmentSlot:

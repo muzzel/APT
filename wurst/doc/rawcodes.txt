@@ -10,3 +10,4 @@ List of reserved Raw Ids, "*" stands for any character.
 # Abilities:
 '$***' - BonusHandler [APT.lib.bonus.BonusHandler]
 'AM**' - HeroDummyMorph [APT.units.hero.HeroDummyGen]
+'AA**' - Attachments [APT.items.ItemTypeGen]

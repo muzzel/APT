@@ -1,12 +1,13 @@
 package ItemTypeGen
 import ObjEditingNatives
+import AbilityObjEditing
 import ItemTypeX
 import ItemTypeList
 import StatHandler
 import ItemTooltipGen
 import EquipmentQualityList
 import DamageTypeList
-import Attachment
+import ObjectIds
 
 // State machine:
 ItemTypeX currentItemTypeX
@@ -41,12 +42,26 @@ public function stats() returns StatList
 	return currentItemTypeX.stats
 
 /** Sets attachments for the current ItemTypeX object. */
-public function itemgenSetAttachment(attachment attachment1, attachment attachment2)
-	if not compiletimeMode
-		currentItemTypeX.attachment1 = attachment1
-		currentItemTypeX.attachment2 = attachment2
+public function itemgenSetAttachment(string model, string point1, string point2)
+	if compiletimeMode
+		attachmentAbilityBaseRaw++
+		var points = 0
+		if point1 != ""
+			points++
+		if point2 != ""
+			points++
+		new AbilityDefinition(attachmentAbilityBaseRaw, 'AIfx')
+			..setName("ItemAttachment")
+			..setIconNormal("ReplaceableTextures\\CommandButtons\\BTNPenguin.blp")
+			..setTarget(model)
+			..setTargetAttachmentPoint(point1)
+			..setTargetAttachmentPoint1(point2)
+			..setTargetAttachments(points)
+		currentObjectDefinition.setString("iabi", idInteger2IdString(attachmentAbilityBaseRaw))
+			
 
 boolean compiletimeMode
+int attachmentAbilityBaseRaw = 'AA00'
 
 @compiletime function genObjects()
 	compiletimeMode = true
