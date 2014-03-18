@@ -31,3 +31,8 @@ public function combatTextMana(unit source, unit target, real mana)
 	createTTEx(target.getPos3fake(), vec2(GetRandomReal(-0.02, 0.02), 0.04), R2I(mana).toString(), 8., 1.2, colorA(0, 0, 255, 255), GetOwningPlayer(source))
 	..setPermanent(false)
 	..setFadepoint(0.6)
+	
+public function combatTextExp(unit target, int exp)
+	createTTEx(target.getPos3fake(), vec2(GetRandomReal(-0.02, 0.02), 0.04), exp.toString() + " exp", 8., 1.2, colorA(0, 255, 204, 0), GetOwningPlayer(target))
+	..setPermanent(false)
+	..setFadepoint(0.6)

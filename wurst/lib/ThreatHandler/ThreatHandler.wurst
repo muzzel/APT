@@ -1,6 +1,14 @@
 package ThreatHandler
 import public ThreatHandlerConfig
-// By muzzel - Version 1.0
+// By muzzel - Version 1.1
+
+// Fixed: camps reset properly when the last unit died
+// Todo:
+//		hero stirbt im kampf ->
+//			creeps resetten nicht
+//			Called ThreatHandlerPU.remove on invalid object.
+
+
 // Based on ZTS by Zwiebelchen (http://www.hiveworkshop.com/forums/spells-569/zwiebelchens-threat-system-2-6-a-156179/)
 //
 // It is recommended to edit certain Gameplay Constants entries, to use the full potential of the system.
@@ -335,19 +343,20 @@ public class ThreatHandlerTU
 		e.tuPrev.tuNext = e.tuNext
 	
 	ondestroy
-		// Clear list:
-		for ThreatListEntry e in this
-			destroy e
-		destroy dummy
-		camp.remove(this)
-		targetAcquireTrigger.destr()
-		if state == ThreatUnitState.RETURNING
-			u.issueImmediateOrderById(851972) // stop
-			SetUnitInvulnerable(u, false)
-			if IsUnitPaused(u)
-				u.unpause()
-		// Enable ==null checks:
-		this.u = null
+		if this.camp != null // if not a dummy
+			// Clear list:
+			for ThreatListEntry e in this
+				destroy e
+			destroy dummy
+			camp.remove(this)
+			targetAcquireTrigger.destr()
+			if state == ThreatUnitState.RETURNING
+				u.issueImmediateOrderById(851972) // stop
+				SetUnitInvulnerable(u, false)
+				if IsUnitPaused(u)
+					u.unpause()
+			// Enable ==null checks:
+			this.u = null
 
 public class ThreatUnitIterator
 	ThreatHandlerTU tu

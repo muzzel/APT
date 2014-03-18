@@ -3,14 +3,32 @@ import UnitX
 import UnitTypeX
 import DamageHandler
 import ThreatHandler
+import CreepExp
+import Respawn
 
 public class CreepUnitX extends UnitX
+	CreepRespawn respawn
 	// ThreatHandler
 	private ThreatHandlerTU tu
 	
 	construct(int raw, vec2 pos, angle facing)
 		super(Player(PLAYER_NEUTRAL_AGGRESSIVE), raw.getUnitTypeX(), pos, facing)
 		tu = new ThreatHandlerTU(u)
+		
+	function setRespawn(real timeout)
+		new CreepRespawn(this, timeout)
 	
 	function getThreatHandlerTU() returns ThreatHandlerTU
 		return tu
+		
+	override private function onDeath()
+		print("CreepUnitX.onDeath")
+		creepSpreadExp(u)
+		if respawn != null
+			respawn.respawn()
+		destroy tu
+		super.onDeath()
+		
+	ondestroy
+		destroy tu
+		respawn = null

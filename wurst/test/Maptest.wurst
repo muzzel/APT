@@ -24,17 +24,29 @@ function startGame()
 	end)
 	// Spawn some units:
 	new CreepUnitX('h000', vec2(-1600., -1800.), angle(0.)) // bottom left knights
+		..setRespawn(20.)
 	new CreepUnitX('h000', vec2(-1600., -2000.), angle(0.))
+		..setRespawn(20.)
 	new CreepUnitX('h000', vec2(-1400., -2000.), angle(0.))
+		..setRespawn(20.)
 	new CreepUnitX('h000', vec2(1600., -1800.), angle(0.)) // bottom right knights
+		..setRespawn(20.)
 	new CreepUnitX('h000', vec2(1600., -2000.), angle(0.))
+		..setRespawn(20.)
 	new CreepUnitX('h000', vec2(1400., -2000.), angle(0.))
+		..setRespawn(20.)
 	new CreepUnitX('h001', vec2(-1600., 1800.), angle(0.)) // top left wolfs
+		..setRespawn(20.)
 	new CreepUnitX('h001', vec2(-1600., 2000.), angle(0.))
+		..setRespawn(20.)
 	new CreepUnitX('h001', vec2(-1400., 2000.), angle(0.))
+		..setRespawn(20.)
 	new CreepUnitX('h001', vec2(1600., 1800.), angle(0.)) // top right wolfs
+		..setRespawn(20.)
 	new CreepUnitX('h001', vec2(1600., 2000.), angle(0.))
+		..setRespawn(20.)
 	new CreepUnitX('h001', vec2(1400., 2000.), angle(0.))
+		..setRespawn(20.)
 	
 	// Spawn some items:
 	new ItemX('I000', vec2(0., 0.))

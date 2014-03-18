@@ -31,17 +31,20 @@ public abstract class UnitX
 		unitDamageHandler = new UnitDamageHandler(this, unitTypeX.damageType)
 //		buffList = new BuffList(u)
 	
+	function getUnit() returns unit
+		return u
+	
+	function getUnitTypeX() returns UnitTypeX
+		return unitTypeX
+	
 	function onDeath()
-		destroy this
+		print("UnitX.onDeath")
+		destroy unitStatBuffer
+		destroy unitDamageHandler
+//		destroy buffList
 	
 	ondestroy
 		RemoveUnit(u)
 		destroy unitStatBuffer
 		destroy unitDamageHandler
 //		destroy buffList
-	
-	function getUnit() returns unit
-		return u
-	
-	function getUnitTypeX() returns UnitTypeX
-		return unitTypeX

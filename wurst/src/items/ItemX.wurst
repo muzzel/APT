@@ -15,9 +15,6 @@ public class ItemX
 	private integer boundTo // playernumber, -1 if unbound
 	private integer creationTimestamp
 	private item itemInstance
-	// Attachment effects:
-	effect attachmentSfx1
-	effect attachmentSfx2
 	
 	construct(int raw, vec2 pos)
 		this.itemType = raw.getItemTypeX()

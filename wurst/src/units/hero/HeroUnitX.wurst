@@ -27,6 +27,7 @@ public class HeroUnitX extends UnitX
 		revivePos = pos
 	
 	override function onDeath()
+		print("HeroUnitX.onDeath")
 		// TODO: reset bufflist
 		destroy pu
 		getTimer()..setData(this castTo int)..start(20., () -> begin
@@ -34,11 +35,15 @@ public class HeroUnitX extends UnitX
 		end)
 	
 	private function revive()
-		ReviveHero(u, revivePos.x, revivePos.y, false)
+		u.revive(revivePos, false)
 		pu = new ThreatHandlerPU(u)
 	
 	function getThreatHandlerPU() returns ThreatHandlerPU
 		return pu
+		
+	ondestroy
+		destroy pu
+		destroy heroInventory
 	
 	function changeDummy(EquipmentClass eqClass, DamageType dmgType)
 		changeHeroDummy(u, eqClass, dmgType)
