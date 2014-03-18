@@ -1,0 +1,24 @@
+package Respawn
+import ClosureTimers
+import CreepUnitX
+
+public class CreepRespawn
+	use Timed
+	int unitRaw
+	vec2 originalPosition
+	angle originalFacing
+	real respawnTime
+	
+	construct(CreepUnitX creepUnitX, real respawnTime)
+		this.unitRaw = creepUnitX.u.getTypeId()
+		this.originalPosition = creepUnitX.u.getPos()
+		this.originalFacing = angle(creepUnitX.u.getFacing())
+		this.respawnTime = respawnTime
+		creepUnitX.respawn = this
+	
+	function respawn()
+		startTimer(respawnTime)
+	
+	private override function onTimer()
+		new CreepUnitX(unitRaw, originalPosition, originalFacing)
+			.respawn = this
