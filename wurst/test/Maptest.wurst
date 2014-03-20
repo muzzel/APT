@@ -66,6 +66,7 @@ function startGame()
 	new ItemX('I004', vec2(0., 0.))
 
 init
+	print("Init start")
 	// After 1 second start game:
 	timeEvent(1, () -> startGame())
 	
@@ -74,4 +75,4 @@ init
 //	new HeroUnitX(Player(0), vec2(0., 50), angle(0.))
 //	chatEvent("-morph 1", () -> hero.changeDummy(EquipmentClass.BOW , DamageType.PIERCING))
 //	chatEvent("-morph 1", () -> hero.changeDummy(EquipmentClass.AXE , DamageType.BLUNT))
-//	print("Finished init!")
+	print("Finished init!")

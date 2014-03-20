@@ -1,10 +1,10 @@
 package DamageHandler
-import public DamageTypeList
-import UnitX
-import CreepUnitX
-import StatHandler
-import CombatText
-import ThreatHandler
+import public initlater DamageTypeList
+import initlater UnitX
+import initlater CreepUnitX
+import initlater StatHandler
+import initlater CombatText
+import initlater ThreatHandler
 
 trigger unitAttackTrigger
 

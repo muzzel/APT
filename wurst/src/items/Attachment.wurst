@@ -1,3 +1,0 @@
-package Attachment
-
-public tuple attachment(string point, string model)

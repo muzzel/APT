@@ -1,7 +1,7 @@
 package HeroDummyList
 import HeroDummyGen
-import DamageTypeList
-import EquipmentClassList
+import initlater DamageTypeList
+import initlater EquipmentClassList
 
 public function initHeroDummyLists()
 	// Stats:

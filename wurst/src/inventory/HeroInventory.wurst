@@ -1,12 +1,11 @@
 package HeroInventory
-import HashMap
-import ItemX
-import InventoryIterator
-import ItemTypeX
-import EquipmentClassList
-import SimError
-import HeroUnitX
-import Attachment
+import initlater HashMap
+import initlater ItemX
+import initlater InventoryIterator
+import initlater ItemTypeX
+import initlater EquipmentClassList
+import initlater SimError
+import initlater HeroUnitX
 
 public class HeroInventory
 	HeroUnitX heroUnitX
@@ -103,7 +102,6 @@ public class HeroInventory
 		map.remove(itemDropTrigger)
 		itemTakeTrigger.destr()
 		itemDropTrigger.destr()
-		
 
 HashMap<trigger, HeroInventory> map = new HashMap<trigger, HeroInventory>()
 int array tmpArray // shared array for temporary immediate use, clean before using

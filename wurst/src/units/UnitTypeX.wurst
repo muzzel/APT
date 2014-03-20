@@ -1,6 +1,6 @@
 package UnitTypeX
 import StatHandler
-import public DamageTypeList
+import public initlater DamageTypeList
 import HashMap
 import Rational
 
@@ -23,3 +23,4 @@ public class UnitTypeX
 	
 	ondestroy
 		printWarning("Attempt to destroy UnitTypeX object.")
+	

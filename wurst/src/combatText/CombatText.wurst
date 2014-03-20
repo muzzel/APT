@@ -1,6 +1,6 @@
 package CombatText
-import Colors
-import Texttag
+import initlater Colors
+import initlater Texttag
 
 public function combatTextDamage(unit source, unit target, real dmg)
 	createTTEx(target.getPos3fake(), vec2(GetRandomReal(-0.02, 0.02), 0.04), R2I(dmg).toString(), 8., 1.2, colorA(255, 255, 255, 255), GetOwningPlayer(source))

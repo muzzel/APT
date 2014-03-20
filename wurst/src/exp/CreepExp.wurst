@@ -1,8 +1,8 @@
 package CreepExp
-import UnitX
-import HeroUnitX
-import Group
-import CombatText
+import initlater UnitX
+import initlater HeroUnitX
+import initlater Group
+import initlater CombatText
 
 constant real CREEP_EXP_RANGE = 1200.
 constant int MAX_LVL_DIFFERENCE = 5

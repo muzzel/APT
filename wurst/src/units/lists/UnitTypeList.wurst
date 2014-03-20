@@ -1,7 +1,6 @@
 package UnitTypeList
-import UnitTypeX
-import StatHandler
-import UnitTypeGen
+import initlater StatHandler
+import initlater UnitTypeGen
 
 public function initUnitTypeLists()
 //	unitgenNewCreep(raw, baseRaw, lvl, name, life, mana, dmg, armor, 100*attackspeed, movespeed) 

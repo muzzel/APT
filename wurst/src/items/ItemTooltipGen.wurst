@@ -1,9 +1,9 @@
 package ItemTooltipGen
-import StatHandler
-import EquipmentQualityList
-import EquipmentClassList
-import EquipmentSlotList
-import DamageTypeList
+import initlater StatHandler
+import initlater EquipmentQualityList
+import initlater EquipmentClassList
+import initlater EquipmentSlotList
+import initlater DamageTypeList
 
 string tooltipHeader
 string tooltipStats

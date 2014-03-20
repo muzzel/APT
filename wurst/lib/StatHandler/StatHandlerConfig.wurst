@@ -1,5 +1,5 @@
 package StatHandlerConfig
-import StatHandler
+import initlater StatHandler
 import BonusHandler
 //import public UnitX // Unit indexer // Cyclic dependency problem, hardcoded getUnitIndex
 

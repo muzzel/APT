@@ -1,13 +1,13 @@
 package ItemTypeGen
-import ObjEditingNatives
-import AbilityObjEditing
+import initlater ObjEditingNatives
+import initlater AbilityObjEditing
+import initlater StatHandler
+import initlater EquipmentQualityList
+import initlater ObjectIds
+import initlater DamageTypeList
 import ItemTypeX
 import ItemTypeList
-import StatHandler
 import ItemTooltipGen
-import EquipmentQualityList
-import DamageTypeList
-import ObjectIds
 
 // State machine:
 ItemTypeX currentItemTypeX

@@ -1,6 +1,7 @@
 package SpellHeal
 import StatHandler
 import ChannelSpellPreset
+import AbilityObjEditing
 
 public constant int SPELL_RAW_HEAL = 'A000'
 
@@ -39,3 +40,4 @@ init
 		..setEffect("")
 		..setCaster("")
 		..setTarget("")
+		..setButtonPositionResearchX(5)

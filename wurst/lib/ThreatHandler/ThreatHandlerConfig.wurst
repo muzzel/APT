@@ -1,8 +1,8 @@
 package ThreatHandlerConfig
-import ThreatHandler
-import UnitX
-import CreepUnitX
-import HeroUnitX
+import initlater ThreatHandler
+import initlater UnitX
+import initlater CreepUnitX
+import initlater HeroUnitX
 
 /** Make this return the ThreatHandlerTU assigned to the specified unit. */
 public function getThreatUnit(unit u) returns ThreatHandlerTU

@@ -1,11 +1,10 @@
 package ItemTypeList
-import ItemTypeGen
-import EquipmentSlotList
-import EquipmentClassList
-import EquipmentQualityList
-import DamageTypeList
-import StatHandler
-import Attachment
+import initlater ItemTypeGen
+import initlater EquipmentSlotList
+import initlater EquipmentClassList
+import initlater EquipmentQualityList
+import initlater DamageTypeList
+import initlater StatHandler
 
 function none() returns DamageType
 	return DamageType.NORMAL

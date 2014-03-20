@@ -3,8 +3,8 @@ import UnitX
 import UnitTypeX
 import DamageHandler
 import ThreatHandler
-import CreepExp
-import Respawn
+import initlater CreepExp
+import initlater Respawn
 
 public class CreepUnitX extends UnitX
 	CreepRespawn respawn

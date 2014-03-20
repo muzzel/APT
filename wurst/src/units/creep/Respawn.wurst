@@ -1,6 +1,6 @@
 package Respawn
-import ClosureTimers
-import CreepUnitX
+import initlater ClosureTimers
+import initlater CreepUnitX
 
 public class CreepRespawn
 	use Timed

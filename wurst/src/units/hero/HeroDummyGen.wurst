@@ -2,9 +2,9 @@ package HeroDummyGen
 import UnitObjEditing
 import AbilityObjEditing
 import ObjectIds
-import DamageTypeList
-import EquipmentClassList
-import HeroDummyList
+import initlater DamageTypeList
+import initlater EquipmentClassList
+import initlater HeroDummyList
 import HashMap
 import HeroUnitTypeX
 import StatHandler

@@ -4,9 +4,9 @@ import UnitTypeX
 import StatHandler
 import BuffHandler
 import DamageHandler
-import HeroDummyGen
-import EquipmentClassList
-import DamageTypeList
+import initlater HeroDummyGen
+import initlater EquipmentClassList
+import initlater DamageTypeList
 import ThreatHandler
 import HeroInventory
 
