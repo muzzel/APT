@@ -1,0 +1,10 @@
+package Event
+
+public module EventModule
+	static trigger trig = CreateTrigger()
+	
+	static function fire()
+		trig.evaluate()
+	
+	static function addAction(code c)
+		trig.addCondition(Filter(c))
