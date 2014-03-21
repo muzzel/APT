@@ -2,13 +2,6 @@ package ThreatHandler
 import public ThreatHandlerConfig
 // By muzzel - Version 1.1
 
-// Fixed: camps reset properly when the last unit died
-// Todo:
-//		hero stirbt im kampf ->
-//			creeps resetten nicht
-//			Called ThreatHandlerPU.remove on invalid object.
-
-
 // Based on ZTS by Zwiebelchen (http://www.hiveworkshop.com/forums/spells-569/zwiebelchens-threat-system-2-6-a-156179/)
 //
 // It is recommended to edit certain Gameplay Constants entries, to use the full potential of the system.
@@ -218,8 +211,8 @@ public class ThreatHandlerPU
 	ondestroy
 		// Clear list:
 		var e = dummy
-		while e.tuNext != dummy
-			e = e.tuNext
+		while e.puNext != dummy // TODO puNext
+			e = e.puNext // TODO puNext
 			destroy e
 		destroy dummy
 		// Enable ==null checks:
@@ -275,9 +268,6 @@ public class ThreatHandlerTU
 		if other != null
 			let otherTu = getThreatUnit(other)
 			// Add this to otherTus camp:
-//			print("otherTu null: " + (otherTu == null).toString())
-//			print("otherTu.camp null: " + (otherTu.camp == null).toString())
-//			print("this null: " + (this == null).toString())
 			otherTu.camp.add(this)
 		else
 			// Create a new camp:
@@ -409,8 +399,8 @@ public class ThreatListEntry
 	private construct()
 		tuPrev = this
 		tuNext = this
-		tuPrev = this
-		tuNext = this
+		puPrev = this
+		puNext = this
 		threat = 100000000.
 		pu = null
 		tu = null

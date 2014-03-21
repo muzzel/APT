@@ -12,3 +12,8 @@ APT.units.UnitX:
 
 APT.units.UnitTypeGen:
 	add damage and armor type to unit gen functions.
+	
+Attack/Attacked Events for individual units. (for proccs etc.)
+UnitX.attack(ed)Event (closure event)
+fire in damagehandler
+provide functions for buffs, items (itemgenOnAttack, itemgenOnAttacked), talents, ...
