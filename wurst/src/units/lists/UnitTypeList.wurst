@@ -4,7 +4,9 @@ import initlater UnitTypeGen
 
 public function initUnitTypeLists()
 //	unitgenNewCreep(raw, baseRaw, lvl, name, life, mana, dmg, armor, 100*attackspeed, movespeed) 
+	// Fallen Knight:
 	unitgenNewCreep('h000', 'hspt', 2, "Fallen Knight", 200, 40, 6, 2, 160, 270)
 	unitgenSetStats()..set(Stat.EVA, 20)..set(Stat.CC, 15)..set(Stat.CM, 50)
+	// Young Wolf:
 	unitgenNewCreep('h001', 'nwlt', 1, "Young Wolf", 100, 10, 5, 1, 240, 290)
 	unitgenSetStats()..set(Stat.EVA, 10)..set(Stat.CC, 15)..set(Stat.CB, 3)
