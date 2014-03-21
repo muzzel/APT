@@ -1,0 +1,45 @@
+/** Basic manual UnitIndexing system. */
+package UnitIndex
+import Event
+
+/** Returns the units index. Returns 0 if not indexed. */
+public function unit.getIndex() returns int
+	return this.getUserData()
+
+/**
+ * Assigns a unique index to the unit.
+ * Fires a UnitIndexEvent if the unit did not have a index assigned yet.
+ */
+public function indexUnit(unit u)
+	if u.getUserData() == 0
+		u.setUserData(new Index() castTo int)
+		UnitIndexEvent.indexedUnit = u
+		UnitIndexEvent.fire()
+	
+/**
+ * Removes the units index and recycles it.
+ * Fires a UnitDeindexEvent if the unit had an index assigned.
+ */
+public function deindexUnit(unit u)
+	if u.getUserData() != 0
+		destroy u.getUserData() castTo Index
+		u.setUserData(0)
+		UnitDeindexEvent.deindexedUnit = u
+		UnitDeindexEvent.fire()
+
+/**
+ * Fires when a unit gets a index assigned.
+ * The field .u references the indexed unit.
+ */
+public class UnitIndexEvent
+	use EventModule
+	static unit indexedUnit
+/**
+ * Fires when a unit has its index removed.
+ * The field .u references the deindexed unit.
+ */
+public class UnitDeindexEvent
+	use EventModule
+	static unit deindexedUnit
+
+class Index
