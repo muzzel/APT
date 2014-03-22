@@ -29,13 +29,11 @@ public abstract class UnitX extends UnitIndex
 	function getUnitTypeX() returns UnitTypeX
 		return unitTypeX
 	
-	function onDeath()
-		destroy unitStatBuffer
-		destroy unitDamageHandler
-//		destroy buffList
+	abstract function onDeath()
 	
 	ondestroy
-		RemoveUnit(u)
+//		if u != null
+//			u.kill()
 		destroy unitStatBuffer
 		destroy unitDamageHandler
 //		destroy buffList
