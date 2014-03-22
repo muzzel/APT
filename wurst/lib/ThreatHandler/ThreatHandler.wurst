@@ -261,8 +261,9 @@ public class ThreatHandlerTU
 			..addAction(function acquireTarget)
 		// Look for camps:
 		GroupEnumUnitsInRange(ENUM_GROUP, u.getPos().x, u.getPos().y, CAMP_RANGE, Condition(() -> begin
-				// Enum units which are: 1. registered ThreatUnits, 2. alive, 3. not in combat 
-				return getThreatUnit(GetFilterUnit()).u != null and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and getThreatUnit(GetFilterUnit()).state == ThreatUnitState.OOC
+				let tu = getThreatUnit(GetFilterUnit())
+				// Enum units which are: 1. registered ThreatUnits, 2. has camp, 3. alive, 4. not in combat 
+				return tu.u != null and tu.camp != null and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and tu.state == ThreatUnitState.OOC
 		end))
 		let other = FirstOfGroup(ENUM_GROUP)
 		if other != null
