@@ -60,7 +60,7 @@ public class UnitDamageHandler
 	construct(UnitX unitX, DamageType damageType)
 		parent = unitX
 		this.damageType = damageType
-		unitAttackTrigger.registerUnitEvent(parent.getUnit(), EVENT_UNIT_DAMAGED)
+		unitAttackTrigger.registerUnitEvent(parent.u, EVENT_UNIT_DAMAGED)
 
 	static function unitAttacked()
 		unit source = GetEventDamageSource()

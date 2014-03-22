@@ -26,9 +26,6 @@ public abstract class UnitX extends UnitIndex
 		unitDamageHandler = new UnitDamageHandler(this, unitTypeX.damageType)
 //		buffList = new BuffList(u)
 	
-	function getUnit() returns unit
-		return u
-	
 	function getUnitTypeX() returns UnitTypeX
 		return unitTypeX
 	
