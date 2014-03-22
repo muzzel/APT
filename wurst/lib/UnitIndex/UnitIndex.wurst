@@ -55,9 +55,9 @@ public class UnitIndex
 		UnitIndexEvent.indexedUnit = tmp
 	
 	ondestroy
-		u.setUserData(0)
 		let tmp = UnitDeindexEvent.deindexedUnit
 		UnitDeindexEvent.deindexedUnit = u
 		UnitDeindexEvent.fire()
 		UnitDeindexEvent.deindexedUnit = tmp
+		u.setUserData(0)
 		
