@@ -6,6 +6,8 @@ import ThreatHandler
 import initlater CreepExp
 import initlater Respawn
 
+// Destroyed everything :(
+
 public class CreepUnitX extends UnitX
 	CreepRespawn respawn
 	// ThreatHandler
@@ -13,6 +15,7 @@ public class CreepUnitX extends UnitX
 	
 	construct(int raw, vec2 pos, angle facing)
 		super(Player(PLAYER_NEUTRAL_AGGRESSIVE), raw.getUnitTypeX(), pos, facing)
+		respawn = null
 		tu = new ThreatHandlerTU(u)
 		
 	function setRespawn(real timeout)
@@ -25,9 +28,7 @@ public class CreepUnitX extends UnitX
 		creepSpreadExp(u)
 		if respawn != null
 			respawn.respawn()
-		destroy tu
-		super.onDeath()
+		destroy this
 		
 	ondestroy
 		destroy tu
-		respawn = null
