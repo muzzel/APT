@@ -50,25 +50,25 @@ public function unitDamageTarget(unit source, unit target, real damage, DamageTy
 		combatTextCrit(source, target, dmg)
 	else
 		combatTextDamage(source, target, dmg)
-	
+
 
 // TODO: give every instance its own trigger, action
 public class UnitDamageHandler
 	UnitX parent
 	DamageType damageType
-	
+
 	construct(UnitX unitX, DamageType damageType)
 		parent = unitX
 		this.damageType = damageType
 		unitAttackTrigger.registerUnitEvent(parent.getUnit(), EVENT_UNIT_DAMAGED)
-	
+
 	static function unitAttacked()
 		unit source = GetEventDamageSource()
 		let unitX = source.getUnitX()
 		DamageType damageType = unitX.unitDamageHandler.damageType
 		real damage = 1.*unitX.unitStatBuffer.get(Stat.DAMAGE)
 		unitDamageTarget(source, GetTriggerUnit(), damage, damageType, true)
-	
+
 init
 	unitAttackTrigger = CreateTrigger()
 	..addAction(function UnitDamageHandler.unitAttacked)

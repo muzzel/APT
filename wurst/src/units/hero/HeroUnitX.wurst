@@ -27,7 +27,6 @@ public class HeroUnitX extends UnitX
 		revivePos = pos
 	
 	override function onDeath()
-		print("HeroUnitX.onDeath")
 		// TODO: reset bufflist
 		destroy pu
 		getTimer()..setData(this castTo int)..start(20., () -> begin

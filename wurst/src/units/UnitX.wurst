@@ -3,18 +3,14 @@ import UnitTypeX
 import StatHandler
 import BuffHandler
 import DamageHandler
-
-// Unit indexing function.
-public function getUnitIndex(unit u) returns int
-	return u.getUserData()
+import public UnitIndex
 
 // Retrieves the UnitX object for the specified unit.
 public function unit.getUnitX() returns UnitX
-	return this.getUserData() castTo UnitX
+	return this.getIndexObject() castTo UnitX
 
-public abstract class UnitX
+public abstract class UnitX extends UnitIndex
 	UnitTypeX unitTypeX
-	unit u
 	player owner
 	// Stats, Damage, Buffs:
 	UnitStatBuffer unitStatBuffer
@@ -22,10 +18,9 @@ public abstract class UnitX
 	BuffList buffList
 	
 	construct(player owner, UnitTypeX unitTypeX, vec2 pos, angle facing)
+		super(createUnit(owner, unitTypeX.raw, pos, facing))
 		this.unitTypeX = unitTypeX
 		this.owner = owner
-		this.u = createUnit(owner, unitTypeX.raw, pos, facing)
-		u.setUserData(this castTo int)
 		// Stats, Damage, Buffs, Threat:
 		unitStatBuffer = new UnitStatBuffer(u, unitTypeX.unitBaseStatBuffer)
 		unitDamageHandler = new UnitDamageHandler(this, unitTypeX.damageType)
@@ -38,7 +33,6 @@ public abstract class UnitX
 		return unitTypeX
 	
 	function onDeath()
-		print("UnitX.onDeath")
 		destroy unitStatBuffer
 		destroy unitDamageHandler
 //		destroy buffList

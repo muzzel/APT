@@ -22,7 +22,6 @@ public class CreepUnitX extends UnitX
 		return tu
 		
 	override private function onDeath()
-		print("CreepUnitX.onDeath")
 		creepSpreadExp(u)
 		if respawn != null
 			respawn.respawn()
