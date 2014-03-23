@@ -3,6 +3,23 @@ import HashMap
 
 HashMap<int, trigger> map = new HashMap<int, trigger>()
 
+public module SpellTargetUnit
+	unit caster = GetTriggerUnit()
+	unit targetUnit = GetSpellTargetUnit()
+
+public module SpellTargetPoint
+	unit caster = GetTriggerUnit()
+	vec2 targetPoint = vec2(GetSpellTargetX(), GetSpellTargetY())
+
+public module SpellTargetNone
+	unit caster = GetTriggerUnit()
+
+public module SpellTargetCombined
+	unit caster = GetTriggerUnit()
+	unit targetUnit = GetSpellTargetUnit()
+	vec2 targetPoint = vec2(GetSpellTargetX(), GetSpellTargetY())
+	boolean isUnitTarget = GetSpellTargetUnit() != null
+
 public module SpellCastInstant
 	abstract static function instantiate()
 	
@@ -22,6 +39,11 @@ public module SpellCastInstant
 	
 	static function addAbility(int raw)
 		map.put(raw, spellCastTrig)
+
+/*
+ * Channel module:
+ * - abstract function getChannelTime() returns real
+ */
 			
 init
 	let trig = CreateTrigger()
