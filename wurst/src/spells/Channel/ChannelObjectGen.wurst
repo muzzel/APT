@@ -1,0 +1,56 @@
+package ChannelObjectGen
+import AbilityObjEditing
+
+public constant string TARGETS_ALLOWED_ALLIY = "friend"
+public constant string TARGETS_ALLOWED_CREEP = "enemies,nonsapper"
+public constant string TARGETS_ALLOWED_CREEP_BOSS = "enemies"
+public constant string TARGETS_ALLOWED_ALLY_CREEP = "friend,enemies,nonsapper"
+public constant string TARGETS_ALLOWED_ALLY_CREEP_BOSS = "friend,enemies"
+
+public function genSpell(int raw, int levels, string order, string name, string hotkey, string icon) returns AbilityDefinitionIllidanChannel
+	let obj = new AbilityDefinitionIllidanChannel(raw)
+	obj.setName(name)
+	obj.setLevels(levels)
+	obj.setOrderStringUseTurnOn(order)
+	obj.setHotkeyNormal(hotkey)
+	obj.setIconNormal(icon)
+	obj.setAnimationNames("")
+	obj.setEffect("")
+	obj.setCaster("")
+	obj.setTarget("")
+	obj.setHeroAbility(false)
+	obj.setCheckDependencies(false)
+	for lvl = 1 to levels
+		obj.setBaseOrderID(lvl, order)
+		obj.setTooltipNormal(lvl, name)
+		obj.setDisableOtherAbilities(lvl, false)
+		obj.setFollowThroughTime(lvl, 0.)
+		obj.setOptions(lvl, 1) // Visible
+		obj.setTargetsAllowed(lvl, "")
+	return obj
+
+public function AbilityDefinitionIllidanChannel.setChannelling(int lvl, string animation)
+	this.setFollowThroughTime(lvl, 999.)
+	this.setAnimationNames(animation)
+
+public function AbilityDefinitionIllidanChannel.setTargetUnit(int lvl, real range, string targetsAllowed)
+	this.setTargetType(lvl, 1)
+	this.setCastRange(lvl, range)
+	this.setTargetsAllowed(lvl, targetsAllowed)
+
+public function AbilityDefinitionIllidanChannel.setTargetPoint(int lvl, real range, real aoe)
+	this.setTargetType(lvl, 2)
+	this.setCastRange(lvl, range)
+	if aoe > 0
+		this.setOptions(lvl, 3) // Visible, TargetImage
+		this.setAreaofEffect(lvl, aoe)
+
+public function AbilityDefinitionIllidanChannel.setTargetCombined(int lvl, real range, string targetsAllowed)
+	this.setTargetType(lvl, 3)
+	this.setCastRange(lvl, range)
+	this.setTargetsAllowed(lvl, targetsAllowed)
+
+public function AbilityDefinitionIllidanChannel.setLevelData(int lvl, int manacost, real cooldown, string tooltipExtended)
+	this.setManaCost(lvl, manacost)
+	this.setCooldown(lvl, cooldown)
+	this.setTooltipNormalExtended(lvl, tooltipExtended)
