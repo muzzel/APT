@@ -1,0 +1,34 @@
+package Channel
+import HashMap
+
+HashMap<int, trigger> map = new HashMap<int, trigger>()
+
+public module SpellCastInstant
+	abstract static function instantiate()
+	
+	abstract function onCast()
+
+	private static trigger spellCastTrig = initTrigger()
+	
+	private static function initTrigger() returns trigger
+		let trig = CreateTrigger()
+		trig.addCondition(Filter(function cast))
+		return trig
+		
+	private static function cast() returns boolean
+//		new thistype().onCast()
+		instantiate()
+		return false
+	
+	static function addAbility(int raw)
+		map.put(raw, spellCastTrig)
+			
+init
+	let trig = CreateTrigger()
+		..addCondition(Filter(() -> begin
+			let t = map.get(GetSpellAbilityId())
+			if t != null
+				t.evaluate()
+	end))
+	for n = 0 to 15
+		trig.registerPlayerUnitEvent(Player(n), EVENT_PLAYER_UNIT_SPELL_EFFECT, null)

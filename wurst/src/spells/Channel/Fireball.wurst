@@ -1,0 +1,22 @@
+package Fireball
+import ChannelObjectGen
+import Channel
+
+class Fireball
+	use SpellCastInstant
+	
+	// Should be handled by the module...
+	override static function instantiate()
+		new Fireball().onCast()
+		
+	override function onCast()
+		print("FIRRRREEEEEEEEEEBAAAAAAAAAAAAL")
+	
+init
+	Fireball.addAbility('A001')
+	
+@compiletime function genObjects()
+	genSpell('A001', 1, "rainoffire", "Fireball", "W", "ReplaceableTextures\\CommandButtons\\BTNPenguin.blp")
+		..setTargetUnit(1, 500, TARGETS_ALLOWED_CREEP_BOSS)
+		..setChannelling(1, "spell,flesh")
+		..setLevelData(1, 20, 7., "Casts a fireball.")

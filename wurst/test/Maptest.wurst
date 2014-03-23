@@ -15,12 +15,12 @@ function startGame()
 	for n = 0 to NUM_OF_PLAYERS-1
 		if GetPlayerSlotState(Player(n)) == PLAYER_SLOT_STATE_PLAYING and GetPlayerController(Player(n)) == MAP_CONTROL_USER
 			playerHeroes[n] = new HeroUnitX(Player(n), vec2(0., 0), angle(0.))
-			playerHeroes[n].u.addAbility('A000')
 	// Workaround: add healspell to heroes
 	periodicEvent(1., () -> begin
 		for n = 0 to NUM_OF_PLAYERS-1
 			if playerHeroes[n].u != null
-				playerHeroes[n].u.addAbility('A000')
+				playerHeroes[n].u.addAbility('A000') // Heal
+				playerHeroes[n].u.addAbility('A001') // Fireball
 	end)
 	// Spawn some units:
 	new CreepUnitX('h000', vec2(-1600., -1800.), angle(0.)) // bottom left knights
